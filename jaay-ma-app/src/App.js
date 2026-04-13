@@ -181,7 +181,7 @@ function AppContent() {
         {(loading || showSplash) && (
           <motion.div 
              key="splash"
-             className="fixed inset-0 bg-neutral-900 flex flex-col items-center justify-center z-[100]"
+             className="fixed inset-0 bg-white/90 backdrop-blur-md flex flex-col items-center justify-center z-[100]"
              initial={{ opacity: 1 }}
              exit={{ opacity: 0, transition: { duration: 0.8, ease: "easeInOut" } }}
           >
@@ -192,17 +192,17 @@ function AppContent() {
                className="flex flex-col items-center"
             >
                 <div className="relative">
-                  <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full scale-150"></div>
+                  <div className="absolute inset-0 bg-primary/10 blur-3xl rounded-full scale-150"></div>
                   <motion.img 
                      src={logoUrl} 
                      alt="JaayMa Logo" 
-                     className="relative w-36 h-36 object-contain drop-shadow-2xl mb-8"
+                     className="relative w-36 h-36 object-contain drop-shadow-xl mb-8"
                      animate={{ y: [0, -15, 0] }}
                      transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
                   />
                 </div>
                 <motion.h1 
-                   className="text-5xl font-display font-bold text-white tracking-tighter"
+                   className="text-5xl font-display font-bold text-black tracking-tighter"
                    initial={{ y: 20, opacity: 0 }}
                    animate={{ y: 0, opacity: 1 }}
                    transition={{ delay: 0.5, duration: 0.8 }}
