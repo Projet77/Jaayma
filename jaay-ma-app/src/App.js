@@ -11,7 +11,8 @@ import AdminDashboard from './pages/dashboard/AdminDashboard';
 import VendorDashboard from './pages/dashboard/VendorDashboard';
 import ProductPage from './pages/ProductPage';
 import FavoritesPage from './pages/FavoritesPage';
-import { AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import logoUrl from './assets/logo.png';
 
 import { AuthProvider, useAuth } from './context/AuthContext';
 
@@ -54,6 +55,15 @@ function AppContent() {
   const [cart, setCart] = useState([]);
   const [favorites, setFavorites] = useState([]);
   const [searchKeyword, setSearchKeyword] = useState('');
+  const [showSplash, setShowSplash] = useState(true);
+
+  // Splash Screen timer minimal
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowSplash(false);
+    }, 2800); // Dure au moins 2.8s
+    return () => clearTimeout(timer);
+  }, []);
 
   // Load products (public)
   useEffect(() => {
@@ -154,17 +164,6 @@ function AppContent() {
     return new Intl.NumberFormat('fr-SN', { style: 'currency', currency: 'XOF', maximumSignificantDigits: 9 }).format(price);
   };
 
-  if (loading) {
-    return (
-      <div className="flex h-screen items-center justify-center bg-white text-black font-bold">
-        <div className="animate-pulse flex flex-col items-center">
-          <div className="w-12 h-12 border-4 border-black border-t-transparent rounded-full animate-spin mb-4"></div>
-          Chargement de la boutique...
-        </div>
-      </div>
-    );
-  }
-
   if (error) {
     return (
       <div className="flex h-screen items-center justify-center bg-white text-red-500 font-bold">
@@ -177,6 +176,59 @@ function AppContent() {
 
   return (
     <div className="bg-background min-h-screen selection:bg-black selection:text-white">
+      {/* Splash Screen */}
+      <AnimatePresence>
+        {(loading || showSplash) && (
+          <motion.div 
+             key="splash"
+             className="fixed inset-0 bg-neutral-900 flex flex-col items-center justify-center z-[100]"
+             initial={{ opacity: 1 }}
+             exit={{ opacity: 0, transition: { duration: 0.8, ease: "easeInOut" } }}
+          >
+            <motion.div
+               initial={{ scale: 0.5, opacity: 0 }}
+               animate={{ scale: 1, opacity: 1 }}
+               transition={{ duration: 0.8, type: "spring", bounce: 0.5 }}
+               className="flex flex-col items-center"
+            >
+                <div className="relative">
+                  <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full scale-150"></div>
+                  <motion.img 
+                     src={logoUrl} 
+                     alt="JaayMa Logo" 
+                     className="relative w-36 h-36 object-contain drop-shadow-2xl mb-8"
+                     animate={{ y: [0, -15, 0] }}
+                     transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                  />
+                </div>
+                <motion.h1 
+                   className="text-5xl font-display font-bold text-white tracking-tighter"
+                   initial={{ y: 20, opacity: 0 }}
+                   animate={{ y: 0, opacity: 1 }}
+                   transition={{ delay: 0.5, duration: 0.8 }}
+                >
+                    Jaay<span className="text-primary">Ma</span>.
+                </motion.h1>
+                <motion.div 
+                    className="mt-10 flex gap-2"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 1 }}
+                >
+                    {[0, 1, 2].map((i) => (
+                        <motion.div
+                            key={i}
+                            className="w-2.5 h-2.5 bg-primary rounded-full shadow-[0_0_10px_rgba(var(--primary),0.8)]"
+                            animate={{ scale: [1, 1.5, 1], opacity: [0.5, 1, 0.5] }}
+                            transition={{ duration: 1, repeat: Infinity, delay: i * 0.2 }}
+                        />
+                    ))}
+                </motion.div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {!isDashboardRoute && (
         <Navbar
           cartCount={cartItemsCount}

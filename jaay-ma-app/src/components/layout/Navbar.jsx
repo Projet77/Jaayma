@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ShoppingBag, Search, Menu, X, User, Bell, Heart } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
-
+import logoUrl from '../../assets/logo.png';
 const Navbar = ({ cartCount, favoritesCount = 0, onCartClick, onSearch, transparent = false }) => {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -127,8 +127,11 @@ const Navbar = ({ cartCount, favoritesCount = 0, onCartClick, onSearch, transpar
                 <div className="container mx-auto px-6 flex items-center justify-between">
                     <div className="flex items-center gap-12">
                         {/* Logo */}
-                        <Link to="/" className="text-2xl font-display font-bold tracking-tight">
-                            Jaay<span className="text-primary">Ma</span>.
+                        <Link to="/" className="flex items-center gap-2">
+                            <img src={logoUrl} alt="Jaay-Ma Logo" className="h-10 w-auto object-contain" />
+                            <span className="text-2xl font-display font-bold tracking-tight">
+                                Jaay<span className="text-primary">Ma</span>.
+                            </span>
                         </Link>
 
                         {/* Desktop Links */}
