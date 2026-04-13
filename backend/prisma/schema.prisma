@@ -1,0 +1,142 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      String   @default("client")
+  phone     String?
+  address   String?
+  city      String?
+  updatedAt DateTime @updatedAt
+
+  favorites Favorite[] // Relation avec les favoris de l'utilisateur
+  products     Product[]    // Produits mis en vente (si le user est 'vendor')
+  orders       Order[]      // Commandes passées par le client
+  notifications Notification[] // Notifications reçues par l'utilisateur
+  reviews      Review[]     // Avis laissés par l'utilisateur
+}
+
+model Product {
+  id            String   @id @default(uuid())
+  name          String
+  brand         String
+  price         Float
+  originalPrice Float?
+  category      String
+  rating        Float    @default(0)
+  reviews       Int      @default(0)
+  image         String
+  images        String[]
+  inStock       Boolean  @default(true)
+  isFeatured    Boolean  @default(false)
+  stock         Int      @default(10)
+  description   String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  favoritedBy   Favorite[] // Relation inverse : utilisateurs ayant favorisé ce produit
+  orderItems    OrderItem[] // Relation vec les commandes contenant ce produit
+  productReviews Review[]    // Avis sur le produit
+  
+  vendorId      String?  
+  vendor        User?     @relation(fields: [vendorId], references: [id], onDelete: SetNull)
+}
+
+model Favorite {
+  id        String   @id @default(uuid())
+  userId    String
+  productId String
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  // Un utilisateur ne peut avoir le même produit en favori qu'une seule fois
+  @@unique([userId, productId])
+}
+
+model Order {
+  id            String      @id @default(uuid())
+  userId        String
+  totalPrice    Float
+  status        String      @default("En attente") // "En attente", "Expédiée", "Livrée", "Annulée"
+  paymentMethod String      @default("Orange Money")
+  shippingAddress String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  orderItems    OrderItem[]
+}
+
+model OrderItem {
+  id         String   @id @default(uuid())
+  orderId    String
+  productId  String
+  quantity   Int      @default(1)
+  price      Float    // Prix au moment de l'achat
+
+  order      Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model PromoCode {
+  id            String    @id @default(uuid())
+  code          String    @unique
+  discountType  String    // "PERCENTAGE" ou "FIXED"
+  discountValue Float
+  isActive      Boolean   @default(true)
+  expiresAt     DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Banner {
+  id        String   @id @default(uuid())
+  imageUrl  String
+  linkUrl   String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  title     String
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Review {
+  id        String   @id @default(uuid())
+  rating    Int      // Note de 1 à 5
+  comment   String   @db.Text
+  userId    String
+  productId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  // Un utilisateur ne peut donner qu'un seul avis par produit
+  @@unique([userId, productId])
+}
