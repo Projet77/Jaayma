@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node server.js",
     "data:import": "node seeder.js",
-    "data:destroy": "node seeder.js -d"
+    "data:destroy": "node seeder.js -d",
+    "postinstall": "npx prisma generate"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.4.1",
