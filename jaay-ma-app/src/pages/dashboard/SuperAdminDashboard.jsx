@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import DashboardLayout from '../../components/layout/DashboardLayout';
 import { Card } from '../../components/ui/core';
-import { TrendingUp, Users, Activity, DollarSign, Package, ShoppingBag, AlertCircle, Plus, Search, Filter, Megaphone, Image, Layout, Tag, Store, Settings, CreditCard, Upload } from 'lucide-react';
+import { TrendingUp, Users, Activity, DollarSign, Package, ShoppingBag, AlertCircle, Plus, Search, Megaphone, Image, Layout, Store, Settings, CreditCard, Upload } from 'lucide-react';
 
 const StatCard = ({ title, value, change, icon: Icon, color }) => (
     <Card className="p-6 border-0 shadow-sm hover:shadow-md transition-shadow">

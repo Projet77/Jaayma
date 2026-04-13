@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+
 import { Heart, Trash2 } from 'lucide-react';
 import { Button, Card } from '../components/ui/core';
 import { useNavigate } from 'react-router-dom';
