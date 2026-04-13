@@ -18,7 +18,7 @@ const ShopPage = ({ addToCart, setSelectedProduct, products = [], favorites = []
         const fetchShopProducts = async () => {
             setIsLoading(true);
             try {
-                let url = `http://localhost:5000/api/products?`;
+                let url = `${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/products?`;
                 const params = new URLSearchParams();
                 
                 if (searchKeyword) params.append('search', searchKeyword);

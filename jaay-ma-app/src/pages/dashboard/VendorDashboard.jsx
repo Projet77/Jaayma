@@ -37,7 +37,7 @@ const VendorDashboard = ({ products = [] }) => {
         setUploadingImage(true);
         try {
             const token = localStorage.getItem('token');
-            const res = await fetch('http://localhost:5000/api/upload/multiple', {
+            const res = await fetch((process.env.REACT_APP_API_URL || 'http://localhost:5000') + '/api/upload/multiple', {
                 method: 'POST',
                 headers: { 'Authorization': `Bearer ${token}` },
                 body: formData
@@ -45,7 +45,7 @@ const VendorDashboard = ({ products = [] }) => {
             if (!res.ok) throw new Error("Erreur d'upload");
 
             const filePaths = await res.json();
-            const imageUrls = filePaths.map(path => `http://localhost:5000${path}`);
+            const imageUrls = filePaths.map(path => `${process.env.REACT_APP_API_URL || 'http://localhost:5000'}${path}`);
 
             setNewProduct({
                 ...newProduct,
@@ -66,7 +66,7 @@ const VendorDashboard = ({ products = [] }) => {
                 const token = localStorage.getItem('token');
                 if (!token) throw new Error("Non authentifié");
 
-                const res = await fetch('http://localhost:5000/api/vendor/stats', {
+                const res = await fetch((process.env.REACT_APP_API_URL || 'http://localhost:5000') + '/api/vendor/stats', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
 
@@ -89,7 +89,7 @@ const VendorDashboard = ({ products = [] }) => {
         setIsSubmitting(true);
         try {
             const token = localStorage.getItem('token');
-            const res = await fetch('http://localhost:5000/api/products', {
+            const res = await fetch((process.env.REACT_APP_API_URL || 'http://localhost:5000') + '/api/products', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

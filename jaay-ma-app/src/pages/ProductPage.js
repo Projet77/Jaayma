@@ -19,7 +19,7 @@ const ProductPage = ({ selectedProduct, addToCart, goBack, setSelectedProduct, p
 
   useEffect(() => {
     if (selectedProduct && selectedProduct.id) {
-      fetch(`http://localhost:5000/api/products/${selectedProduct.id}/reviews`)
+      fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/products/${selectedProduct.id}/reviews`)
         .then(res => res.json())
         .then(data => {
             if (Array.isArray(data)) setReviews(data);
@@ -34,7 +34,7 @@ const ProductPage = ({ selectedProduct, addToCart, goBack, setSelectedProduct, p
     
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch(`http://localhost:5000/api/products/${selectedProduct.id}/reviews`, {
+      const res = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/products/${selectedProduct.id}/reviews`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

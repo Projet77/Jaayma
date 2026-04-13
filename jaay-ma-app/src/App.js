@@ -59,7 +59,7 @@ function AppContent() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/products');
+        const response = await fetch((process.env.REACT_APP_API_URL || 'http://localhost:5000') + '/api/products');
         if (!response.ok) throw new Error('Erreur de réseau ou serveur injoignable');
         const data = await response.json();
         setProducts(data);
@@ -82,7 +82,7 @@ function AppContent() {
         return;
       }
       try {
-        const response = await fetch('http://localhost:5000/api/favorites', {
+        const response = await fetch((process.env.REACT_APP_API_URL || 'http://localhost:5000') + '/api/favorites', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (response.ok) {
@@ -107,7 +107,7 @@ function AppContent() {
     }
 
     try {
-      const response = await fetch(`http://localhost:5000/api/favorites/${product.id}`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/favorites/${product.id}`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` }
       });

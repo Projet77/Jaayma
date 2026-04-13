@@ -40,7 +40,7 @@ const Navbar = ({ cartCount, favoritesCount = 0, onCartClick, onSearch, transpar
         setIsSearching(true);
         const delayDebounceFn = setTimeout(async () => {
             try {
-                const res = await fetch(`http://localhost:5000/api/products?search=${encodeURIComponent(searchQuery)}`);
+                const res = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/products?search=${encodeURIComponent(searchQuery)}`);
                 if (res.ok) {
                     const data = await res.json();
                     setSuggestions(data.slice(0, 5)); // On garde max 5 suggestions
@@ -59,7 +59,7 @@ const Navbar = ({ cartCount, favoritesCount = 0, onCartClick, onSearch, transpar
         if (!user) return;
         try {
             const token = localStorage.getItem('token');
-            const res = await fetch('http://localhost:5000/api/notifications', {
+            const res = await fetch((process.env.REACT_APP_API_URL || 'http://localhost:5000') + '/api/notifications', {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             if (res.ok) {
@@ -79,7 +79,7 @@ const Navbar = ({ cartCount, favoritesCount = 0, onCartClick, onSearch, transpar
     const markAsRead = async (id) => {
         try {
             const token = localStorage.getItem('token');
-            await fetch(`http://localhost:5000/api/notifications/${id}/read`, {
+            await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/notifications/${id}/read`, {
                 method: 'PUT',
                 headers: { 'Authorization': `Bearer ${token}` }
             });
@@ -90,7 +90,7 @@ const Navbar = ({ cartCount, favoritesCount = 0, onCartClick, onSearch, transpar
     const markAllAsRead = async () => {
         try {
             const token = localStorage.getItem('token');
-            await fetch(`http://localhost:5000/api/notifications/read-all`, {
+            await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/notifications/read-all`, {
                 method: 'PUT',
                 headers: { 'Authorization': `Bearer ${token}` }
             });

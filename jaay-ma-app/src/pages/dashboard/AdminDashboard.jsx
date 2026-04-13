@@ -58,7 +58,7 @@ const AdminDashboard = ({ products = [] }) => {
         setUploadingImage(true);
         try {
             const token = localStorage.getItem('token');
-            const res = await fetch('http://localhost:5000/api/upload/multiple', {
+            const res = await fetch((process.env.REACT_APP_API_URL || 'http://localhost:5000') + '/api/upload/multiple', {
                 method: 'POST',
                 headers: { 'Authorization': `Bearer ${token}` },
                 body: formData
@@ -66,7 +66,7 @@ const AdminDashboard = ({ products = [] }) => {
             if (!res.ok) throw new Error("Erreur d'upload");
 
             const filePaths = await res.json();
-            const imageUrls = filePaths.map(path => `http://localhost:5000${path}`);
+            const imageUrls = filePaths.map(path => `${process.env.REACT_APP_API_URL || 'http://localhost:5000'}${path}`);
 
             if (isEdit) {
                 setEditingProduct({
@@ -94,7 +94,7 @@ const AdminDashboard = ({ products = [] }) => {
         setIsSubmitting(true);
         try {
             const token = localStorage.getItem('token');
-            const res = await fetch('http://localhost:5000/api/products', {
+            const res = await fetch((process.env.REACT_APP_API_URL || 'http://localhost:5000') + '/api/products', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                 body: JSON.stringify(newProduct)
@@ -118,7 +118,7 @@ const AdminDashboard = ({ products = [] }) => {
             const token = localStorage.getItem('token');
             const { vendor, orderItems, favoritedBy, createdAt, updatedAt, ...productData } = editingProduct;
 
-            const res = await fetch(`http://localhost:5000/api/products/${editingProduct.id}`, {
+            const res = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/products/${editingProduct.id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                 body: JSON.stringify(productData)
@@ -138,7 +138,7 @@ const AdminDashboard = ({ products = [] }) => {
         e.preventDefault();
         setIsSubmitting(true);
         try {
-            const res = await fetch('http://localhost:5000/api/auth/register', {
+            const res = await fetch((process.env.REACT_APP_API_URL || 'http://localhost:5000') + '/api/auth/register', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(newUser)
@@ -164,7 +164,7 @@ const AdminDashboard = ({ products = [] }) => {
         setIsSubmitting(true);
         try {
             const token = localStorage.getItem('token');
-            const res = await fetch('http://localhost:5000/api/admin/promos', {
+            const res = await fetch((process.env.REACT_APP_API_URL || 'http://localhost:5000') + '/api/admin/promos', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                 body: JSON.stringify(newPromo)
@@ -189,7 +189,7 @@ const AdminDashboard = ({ products = [] }) => {
         if (!window.confirm("Changer le statut de ce code promo ?")) return;
         try {
             const token = localStorage.getItem('token');
-            const res = await fetch(`http://localhost:5000/api/admin/promos/${promoId}`, {
+            const res = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/admin/promos/${promoId}`, {
                 method: 'PUT',
                 headers: { 'Authorization': `Bearer ${token}` }
             });
@@ -202,7 +202,7 @@ const AdminDashboard = ({ products = [] }) => {
         if (!window.confirm("Voulez-vous vraiment supprimer ce code promo ?")) return;
         try {
             const token = localStorage.getItem('token');
-            const res = await fetch(`http://localhost:5000/api/admin/promos/${promoId}`, {
+            const res = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/admin/promos/${promoId}`, {
                 method: 'DELETE',
                 headers: { 'Authorization': `Bearer ${token}` }
             });
@@ -214,7 +214,7 @@ const AdminDashboard = ({ products = [] }) => {
     const handleToggleBoost = async (productId) => {
         try {
             const token = localStorage.getItem('token');
-            const res = await fetch(`http://localhost:5000/api/products/${productId}/feature`, {
+            const res = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/products/${productId}/feature`, {
                 method: 'PUT',
                 headers: { 'Authorization': `Bearer ${token}` }
             });
@@ -229,7 +229,7 @@ const AdminDashboard = ({ products = [] }) => {
             formData.append('image', file);
 
             const token = localStorage.getItem('token');
-            const uploadRes = await fetch('http://localhost:5000/api/upload', {
+            const uploadRes = await fetch((process.env.REACT_APP_API_URL || 'http://localhost:5000') + '/api/upload', {
                 method: 'POST',
                 headers: { 'Authorization': `Bearer ${token}` },
                 body: formData
@@ -237,7 +237,7 @@ const AdminDashboard = ({ products = [] }) => {
             if (!uploadRes.ok) throw new Error("Erreur upload");
             const uploadData = await uploadRes.json();
 
-            const res = await fetch('http://localhost:5000/api/banners', {
+            const res = await fetch((process.env.REACT_APP_API_URL || 'http://localhost:5000') + '/api/banners', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                 body: JSON.stringify({ imageUrl: uploadData.imageUrl })
@@ -250,7 +250,7 @@ const AdminDashboard = ({ products = [] }) => {
     const handleToggleBanner = async (bannerId) => {
         try {
             const token = localStorage.getItem('token');
-            await fetch(`http://localhost:5000/api/banners/${bannerId}/toggle`, {
+            await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/banners/${bannerId}/toggle`, {
                 method: 'PUT',
                 headers: { 'Authorization': `Bearer ${token}` }
             });
@@ -262,7 +262,7 @@ const AdminDashboard = ({ products = [] }) => {
         if (!window.confirm("Supprimer cette bannière ?")) return;
         try {
             const token = localStorage.getItem('token');
-            await fetch(`http://localhost:5000/api/banners/${bannerId}`, {
+            await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/banners/${bannerId}`, {
                 method: 'DELETE',
                 headers: { 'Authorization': `Bearer ${token}` }
             });
@@ -276,19 +276,19 @@ const AdminDashboard = ({ products = [] }) => {
                 const token = localStorage.getItem('token');
                 if (!token) throw new Error("Non authentifié");
 
-                const resStats = await fetch('http://localhost:5000/api/admin/stats', {
+                const resStats = await fetch((process.env.REACT_APP_API_URL || 'http://localhost:5000') + '/api/admin/stats', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
-                const resUsers = await fetch('http://localhost:5000/api/admin/users', {
+                const resUsers = await fetch((process.env.REACT_APP_API_URL || 'http://localhost:5000') + '/api/admin/users', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
-                const resOrders = await fetch('http://localhost:5000/api/admin/orders', {
+                const resOrders = await fetch((process.env.REACT_APP_API_URL || 'http://localhost:5000') + '/api/admin/orders', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
-                const resPromos = await fetch('http://localhost:5000/api/admin/promos', {
+                const resPromos = await fetch((process.env.REACT_APP_API_URL || 'http://localhost:5000') + '/api/admin/promos', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
-                const resBanners = await fetch('http://localhost:5000/api/banners?all=true', {
+                const resBanners = await fetch((process.env.REACT_APP_API_URL || 'http://localhost:5000') + '/api/banners?all=true', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
 
@@ -548,7 +548,7 @@ const AdminDashboard = ({ products = [] }) => {
                                                     if (window.confirm('Voulez-vous vraiment supprimer ce produit ?')) {
                                                         try {
                                                             const token = localStorage.getItem('token');
-                                                            const res = await fetch(`http://localhost:5000/api/products/${product.id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+                                                            const res = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/products/${product.id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
                                                             if (!res.ok) throw new Error('Erreur de suppression');
                                                             window.location.reload();
                                                         } catch (e) { alert(e.message); }

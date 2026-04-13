@@ -15,7 +15,7 @@ const LandingPage = ({ setSelectedProduct, products = [] }) => {
     // Bannières Pub
     const [banners, setBanners] = useState([]);
     useEffect(() => {
-        fetch('http://localhost:5000/api/banners')
+        fetch((process.env.REACT_APP_API_URL || 'http://localhost:5000') + '/api/banners')
             .then(res => res.json())
             .then(data => setBanners(data))
             .catch(err => console.error("Erreur chargement des bannières:", err));
