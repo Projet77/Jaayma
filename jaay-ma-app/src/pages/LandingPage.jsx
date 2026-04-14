@@ -114,17 +114,15 @@ const LandingPage = ({ setSelectedProduct, products = [] }) => {
                                 >
                                     <div className="relative aspect-[4/5] bg-neutral-50 overflow-hidden rounded-t-xl mb-4">
                                         <img src={product.image} alt={product.name} className="w-full h-full object-contain p-6 group-hover:scale-105 transition-transform duration-500 mix-blend-multiply" />
-                                        <div className="absolute top-3 right-3 bg-white/80 backdrop-blur rounded-full px-3 py-1 text-xs font-bold shadow-sm">
-                                            {i + 1}
-                                        </div>
+                                        {/* Supprimé la numérotation ici selon la demande */}
                                     </div>
                                     <div className="px-2 pb-2">
-                                        <div className="flex justify-between items-start">
-                                            <div>
+                                        <div className="flex justify-between items-start gap-3">
+                                            <div className="flex-1 min-w-0">
                                                 <p className="text-xs text-neutral-400 font-bold uppercase tracking-wider mb-1">{product.brand}</p>
-                                                <h3 className="font-semibold text-lg leading-tight mb-2 group-hover:text-primary transition-colors">{product.name}</h3>
+                                                <h3 className="font-semibold text-lg leading-tight mb-2 group-hover:text-primary transition-colors truncate">{product.name}</h3>
                                             </div>
-                                            <span className="font-bold text-sm bg-black text-white px-2 py-1 rounded">{new Intl.NumberFormat('fr-SN', { style: 'currency', currency: 'XOF', maximumSignificantDigits: 3 }).format(product.price)}</span>
+                                            <span className="font-bold text-sm bg-black text-white px-2 py-1 rounded shrink-0">{new Intl.NumberFormat('fr-SN', { style: 'currency', currency: 'XOF', maximumSignificantDigits: 3 }).format(product.price)}</span>
                                         </div>
                                     </div>
                                 </Card>
