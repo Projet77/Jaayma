@@ -150,12 +150,44 @@ const getMe = async (req, res) => {
     }
 };
 
-// @desc    Authenticate with Google
+// @desc    Authenticate with Google (connexion uniquement, pas d'inscription automatique)
 // @route   POST /api/auth/google
 // @access  Public
 const googleLogin = async (req, res) => {
-    // Fonctionnalité désactivée conformément aux nouvelles règles
-    res.status(400).json({ message: "La connexion par Google a été désactivée. Veuillez remplir le formulaire d'inscription standard." });
+    try {
+        const { idToken } = req.body;
+
+        if (!idToken) {
+            return res.status(400).json({ message: 'Token Google manquant.' });
+        }
+
+        const ticket = await googleClient.verifyIdToken({ idToken });
+        const payload = ticket.getPayload();
+        const { email } = payload;
+
+        // Chercher si l'utilisateur existe DÉJÀ (il doit avoir rempli le formulaire avant)
+        const user = await prisma.user.findUnique({ where: { email } });
+
+        if (!user) {
+            return res.status(404).json({
+                message: `Aucun compte trouvé pour ${email}. Veuillez d'abord vous inscrire via le formulaire en renseignant votre adresse et votre téléphone.`
+            });
+        }
+
+        res.json({
+            _id: user.id,
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            role: user.role,
+            token: generateToken(user.id),
+            user: { id: user.id, name: user.name, email: user.email, role: user.role }
+        });
+
+    } catch (error) {
+        console.error("Erreur Google Login:", error);
+        res.status(401).json({ message: 'Token Google invalide ou expiré.' });
+    }
 };
 
 module.exports = {

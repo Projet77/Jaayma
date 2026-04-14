@@ -73,6 +73,24 @@ export const AuthProvider = ({ children }) => {
         return data.user;
     };
 
+    const loginWithGoogle = async (idToken) => {
+        const response = await fetch((process.env.REACT_APP_API_URL || 'http://localhost:5000') + '/api/auth/google', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ idToken })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.message || 'Connexion Google échouée.');
+        }
+
+        localStorage.setItem('token', data.token);
+        setUser(data.user);
+        return data.user;
+    };
+
     const logout = () => {
         localStorage.removeItem('token');
         setUser(null);
@@ -81,7 +99,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ user, login, register, logout, loading }}>
+        <AuthContext.Provider value={{ user, login, register, loginWithGoogle, logout, loading }}>
             {children}
         </AuthContext.Provider>
     );
