@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const prisma = require('../config/prisma');
 const { OAuth2Client } = require('google-auth-library');
+const sendEmail = require('../utils/sendEmail');
 
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID || 'dummy-client-id');
 
@@ -47,13 +48,31 @@ const registerUser = async (req, res) => {
             }
         });
 
-        // Générer une notification de bienvenue
+        // Générer une notification de bienvenue in-app
         await prisma.notification.create({
             data: {
                 userId: user.id,
                 title: "Bienvenue sur Jaay-Ma !",
-                message: "Merci de nous avoir rejoints. Votre compte a été créé avec succès. Commencez dès maintenant à explorer nos meilleures offres."
+                message: "Merci de nous avoir rejoints. Votre profil est créé avec succès."
             }
+        });
+
+        // Envoyer l'email de bienvenue
+        const emailHtml = `
+            <h2>Bienvenue sur Jaay-Ma, ${name} ! 🎉</h2>
+            <p>Nous sommes ravis de vous compter parmi nous.</p>
+            <p>Votre compte a bien été créé avec l'adresse <strong>${email}</strong>.</p>
+            <br/>
+            <p>Vous pouvez dès à présent explorer nos produits et finaliser vos achats en toute sécurité.</p>
+            <br/>
+            <p>L'équipe Jaay-Ma.</p>
+        `;
+        
+        // Exécution en arrière-plan sans bloquer (await retiré)
+        sendEmail({
+            to: email,
+            subject: 'Bienvenue sur Jaay-Ma !',
+            html: emailHtml
         });
 
         if (user) {
@@ -135,71 +154,8 @@ const getMe = async (req, res) => {
 // @route   POST /api/auth/google
 // @access  Public
 const googleLogin = async (req, res) => {
-    try {
-        const { idToken } = req.body;
-
-        if (!idToken) {
-            return res.status(400).json({ message: 'Missing Google ID Token' });
-        }
-
-        // Vérification du token via g-auth-library
-        const ticket = await googleClient.verifyIdToken({
-            idToken: idToken,
-            // audience: process.env.GOOGLE_CLIENT_ID, // Mieux vaut vérifier l'audience en prod
-        });
-
-        const payload = ticket.getPayload();
-        const { email, name, picture } = payload;
-
-        // Chercher si l'utilisateur existe déjà
-        let user = await prisma.user.findUnique({ where: { email } });
-
-        if (!user) {
-            // Création silencieuse d'un compte avec un mot de passe aléatoire indéchiffrable
-            const salt = await bcrypt.genSalt(10);
-            const randomPassword = Math.random().toString(36).slice(-10) + Math.random().toString(36).slice(-10);
-            const hashedPassword = await bcrypt.hash(randomPassword, salt);
-
-            user = await prisma.user.create({
-                data: {
-                    name: name || 'Google User',
-                    email,
-                    password: hashedPassword,
-                    role: 'client',
-                }
-            });
-
-            // Notification de bienvenue
-            await prisma.notification.create({
-                data: {
-                    userId: user.id,
-                    title: "Bienvenue sur Jaay-Ma !",
-                    message: "Merci d'avoir utilisé Google pour vous connecter. Votre profil est prêt."
-                }
-            });
-        }
-
-        // On renvoie un JWT Jaay-Ma classique
-        res.json({
-            _id: user.id,
-            id: user.id,
-            name: user.name,
-            email: user.email,
-            role: user.role,
-            picture: picture || null,
-            token: generateToken(user.id),
-            user: {
-                id: user.id,
-                name: user.name,
-                email: user.email,
-                role: user.role
-            }
-        });
-
-    } catch (error) {
-        console.error("Erreur Google Login:", error);
-        res.status(401).json({ message: 'Invalid or expired Google Token' });
-    }
+    // Fonctionnalité désactivée conformément aux nouvelles règles
+    res.status(400).json({ message: "La connexion par Google a été désactivée. Veuillez remplir le formulaire d'inscription standard." });
 };
 
 module.exports = {
