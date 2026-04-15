@@ -45,6 +45,7 @@ const registerUser = async (req, res) => {
                 phone: otherData.phone || null,
                 address: otherData.address || null,
                 city: otherData.city || null,
+                shopName: otherData.shopName || null,
             }
         });
 
@@ -82,6 +83,7 @@ const registerUser = async (req, res) => {
                 name: user.name,
                 email: user.email,
                 role: user.role,
+                shopName: user.shopName,
                 token: generateToken(user.id),
             });
         } else {
@@ -110,12 +112,14 @@ const loginUser = async (req, res) => {
                 name: user.name,
                 email: user.email,
                 role: user.role,
+                shopName: user.shopName,
                 token: generateToken(user.id),
                 user: {
                     id: user.id,
                     name: user.name,
                     email: user.email,
-                    role: user.role
+                    role: user.role,
+                    shopName: user.shopName
                 }
             });
         } else {
@@ -140,6 +144,7 @@ const getMe = async (req, res) => {
                 name: user.name,
                 email: user.email,
                 role: user.role,
+                shopName: user.shopName,
             });
         } else {
             res.status(404).json({ message: 'User not found' });
