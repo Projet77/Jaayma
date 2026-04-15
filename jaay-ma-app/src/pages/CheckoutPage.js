@@ -24,7 +24,16 @@ const CheckoutPage = ({
     postalCode: ''
   });
 
-  const [paymentMethod, setPaymentMethod] = useState('orange-money');
+  const [paymentMethod, setPaymentMethod] = useState('wave');
+
+  // Lien de base de votre compte Wave Business
+  const WAVE_BASE_URL = 'https://pay.wave.com/m/M_sn_6xTx7wYHi-8V/c/sn/';
+
+  // Génère le lien Wave avec le montant exact du panier
+  const getWavePaymentUrl = () => {
+    const amount = Math.round(cartTotal); // Montant en FCFA (entier)
+    return `${WAVE_BASE_URL}?amount=${amount}`;
+  };
 
   const steps = [
     { id: 1, name: 'Adresse', complete: checkoutStep > 1 },
@@ -39,7 +48,14 @@ const CheckoutPage = ({
 
   const handlePaymentSubmit = (e) => {
     e.preventDefault();
-    setCheckoutStep(3);
+    if (paymentMethod === 'wave') {
+      // Rediriger vers Wave Business avec le montant exact
+      window.open(getWavePaymentUrl(), '_blank');
+      // On passe à l'étape 3 (confirmation) après avoir ouvert Wave
+      setCheckoutStep(3);
+    } else {
+      setCheckoutStep(3);
+    }
   };
 
   return (
@@ -186,7 +202,9 @@ const CheckoutPage = ({
                 </div>
               </label>
               
-              <label className="flex items-center p-4 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
+              <label className={`flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                paymentMethod === 'wave' ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:bg-gray-50'
+              }`}>
                 <input
                   type="radio"
                   name="payment"
@@ -195,9 +213,21 @@ const CheckoutPage = ({
                   onChange={(e) => setPaymentMethod(e.target.value)}
                   className="mr-3"
                 />
-                <div className="flex items-center">
-                  <Icons.Wave />
-                  <span className="ml-2 font-medium">Wave</span>
+                <div className="flex items-center justify-between w-full">
+                  <div className="flex items-center">
+                    <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center mr-3">
+                      <span className="text-white font-bold text-sm">W</span>
+                    </div>
+                    <div>
+                      <span className="font-bold text-gray-900">Wave</span>
+                      <p className="text-xs text-gray-500">Paiement instantané par lien</p>
+                    </div>
+                  </div>
+                  {paymentMethod === 'wave' && (
+                    <span className="text-xs bg-blue-100 text-blue-700 font-bold px-2 py-1 rounded-full">
+                      Recommandé ✨
+                    </span>
+                  )}
                 </div>
               </label>
               
@@ -256,12 +286,24 @@ const CheckoutPage = ({
               >
                 Retour
               </button>
-              <button
-                type="submit"
-                className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-lg font-medium"
-              >
-                Confirmer le paiement
-              </button>
+              {paymentMethod === 'wave' ? (
+                <button
+                  type="submit"
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-bold flex items-center gap-2"
+                >
+                  <span>Payer {formatPrice(cartTotal)} avec Wave</span>
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                  </svg>
+                </button>
+              ) : (
+                <button
+                  type="submit"
+                  className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-lg font-medium"
+                >
+                  Confirmer le paiement
+                </button>
+              )}
             </div>
           </form>
         </div>
