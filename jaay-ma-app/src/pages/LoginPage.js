@@ -45,7 +45,7 @@ const LoginPage = () => {
     setError('');
 
     if (!GOOGLE_CLIENT_ID) {
-      setError("La connexion Google n'est pas encore configurée (REACT_APP_GOOGLE_CLIENT_ID manquant). Utilisez votre email et mot de passe.");
+      setError("La connexion Google n'est pas encore configurée. Utilisez votre email et mot de passe.");
       return;
     }
 
@@ -59,20 +59,12 @@ const LoginPage = () => {
     window.google.accounts.id.initialize({
       client_id: GOOGLE_CLIENT_ID,
       callback: handleGoogleCallback,
-      cancel_on_tap_outside: true,
+      use_fedcm_for_prompt: true, // Compatible avec la migration FedCM
     });
 
+    // Ouvrir le popup directement (méthode la plus fiable)
     window.google.accounts.id.prompt((notification) => {
       if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-        // Popup bloquée : fallback sur un bouton rendu par Google
-        const container = document.getElementById('google-btn-container');
-        if (container) {
-          window.google.accounts.id.renderButton(container, {
-            theme: 'outline',
-            size: 'large',
-            width: container.offsetWidth,
-          });
-        }
         setGoogleLoading(false);
       }
     });
