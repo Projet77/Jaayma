@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import DashboardLayout from '../../components/layout/DashboardLayout';
 import { Card } from '../../components/ui/core';
 import { Package, ShoppingBag, AlertCircle, Plus, Search, Filter, Megaphone, Tag, ArrowRight, TrendingUp, Store, Users, Loader, X } from 'lucide-react';
+import { getAssetUrl } from '../../utils/assetUtils';
 
 const AdminDashboard = ({ products = [] }) => {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -66,7 +67,7 @@ const AdminDashboard = ({ products = [] }) => {
             if (!res.ok) throw new Error("Erreur d'upload");
 
             const filePaths = await res.json();
-            const imageUrls = filePaths.map(path => `${process.env.REACT_APP_API_URL || 'http://localhost:5000'}${path}`);
+            const imageUrls = filePaths.map(path => path);
 
             if (isEdit) {
                 setEditingProduct({
@@ -484,7 +485,7 @@ const AdminDashboard = ({ products = [] }) => {
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-3">
                                                 <div className="w-12 h-12 rounded-lg bg-neutral-100 overflow-hidden relative">
-                                                    <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+                                                    <img src={getAssetUrl(product.image)} alt={product.name} className="w-full h-full object-cover" />
                                                     {product.isFeatured && (
                                                         <div className="absolute top-0 right-0 bg-yellow-400 w-3 h-3 rounded-bl-lg"></div>
                                                     )}
@@ -992,7 +993,7 @@ const AdminDashboard = ({ products = [] }) => {
                                 {newProduct.images && newProduct.images.length > 0 && (
                                     <div className="flex gap-2 flex-wrap mt-2">
                                         {newProduct.images.map((img, idx) => (
-                                            <img key={idx} src={img} alt={`Aperçu ${idx + 1}`} className="h-20 w-20 object-cover rounded-lg border border-neutral-200" />
+                                            <img key={idx} src={getAssetUrl(img)} alt={`Aperçu ${idx + 1}`} className="h-20 w-20 object-cover rounded-lg border border-neutral-200" />
                                         ))}
                                     </div>
                                 )}
@@ -1076,12 +1077,12 @@ const AdminDashboard = ({ products = [] }) => {
                                 {editingProduct.images && editingProduct.images.length > 0 ? (
                                     <div className="flex gap-2 flex-wrap mt-2">
                                         {editingProduct.images.map((img, idx) => (
-                                            <img key={idx} src={img} alt={`Aperçu ${idx + 1}`} className="h-20 w-20 object-cover rounded-lg border border-neutral-200" />
+                                            <img key={idx} src={getAssetUrl(img)} alt={`Aperçu ${idx + 1}`} className="h-20 w-20 object-cover rounded-lg border border-neutral-200" />
                                         ))}
                                     </div>
                                 ) : editingProduct.image && (
                                     <div className="flex gap-2 flex-wrap mt-2">
-                                        <img src={editingProduct.image} alt="Aperçu" className="h-20 w-20 object-cover rounded-lg border border-neutral-200" />
+                                        <img src={getAssetUrl(editingProduct.image)} alt="Aperçu" className="h-20 w-20 object-cover rounded-lg border border-neutral-200" />
                                     </div>
                                 )}
                             </div>
@@ -1289,7 +1290,7 @@ const AdminDashboard = ({ products = [] }) => {
                                             <div className="flex items-center gap-4">
                                                 <div className="w-12 h-12 bg-neutral-100 rounded-lg overflow-hidden shrink-0">
                                                     {product.image ? (
-                                                        <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+                                                        <img src={getAssetUrl(product.image)} alt={product.name} className="w-full h-full object-cover" />
                                                     ) : (
                                                         <div className="w-full h-full flex items-center justify-center text-neutral-400">
                                                             <Package className="w-6 h-6" />

@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { Heart, Trash2 } from 'lucide-react';
+import { getAssetUrl } from '../utils/assetUtils';
 import { Button, Card } from '../components/ui/core';
 import { useNavigate } from 'react-router-dom';
 
@@ -39,7 +40,7 @@ const FavoritesPage = ({ favorites, toggleFavorite, addToCart, setSelectedProduc
                         <Card key={product.id} className="group relative border border-transparent hover:border-neutral-100 cursor-pointer" onClick={() => { setSelectedProduct(product); navigate(`/product/${product.id}`); }}>
                             <div className="aspect-[4/5] bg-[#F8F8F8] overflow-hidden relative">
                                 <img
-                                    src={product.image || "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&q=80"}
+                                    src={product.image ? getAssetUrl(product.image) : "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&q=80"}
                                     alt={product.name}
                                     className="w-full h-full object-cover mix-blend-multiply group-hover:scale-105 transition-transform duration-700 ease-out"
                                 />

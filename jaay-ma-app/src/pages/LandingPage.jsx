@@ -1,7 +1,7 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { ArrowRight, Star, TrendingUp, ShieldCheck, Zap } from 'lucide-react';
+import { getAssetUrl } from '../utils/assetUtils';
 import { Button, Card } from '../components/ui/core';
 import Footer from '../components/layout/Footer';
 import { useNavigate } from 'react-router-dom';
@@ -158,7 +158,7 @@ const LandingPage = ({ setSelectedProduct, products = [] }) => {
                                             onClick={() => { setSelectedProduct(product); navigate(`/product/${product.id}`); }}
                                         >
                                             <div className="relative aspect-square bg-[#F9F9F9] overflow-hidden rounded-t-lg mb-4">
-                                                <img src={product.image} alt={product.name} className="w-full h-full object-contain p-4 group-hover:scale-110 transition-transform duration-500 mix-blend-multiply" />
+                                                <img src={getAssetUrl(product.image)} alt={product.name} className="w-full h-full object-contain p-4 group-hover:scale-110 transition-transform duration-500 mix-blend-multiply" />
                                                 {product.tag && (
                                                     <span className="absolute top-2 left-2 bg-black/5 text-black text-[10px] font-bold px-2 py-1 uppercase rounded-sm">
                                                         {product.tag}

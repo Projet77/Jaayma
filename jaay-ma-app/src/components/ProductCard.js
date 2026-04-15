@@ -1,5 +1,5 @@
-
 import React from 'react';
+import { getAssetUrl } from '../utils/assetUtils';
 import { Icons } from '../icons';
 
 const ProductCard = ({
@@ -25,7 +25,7 @@ const ProductCard = ({
       {/* Image */}
       <div className="relative mb-3 aspect-square bg-surface-50 rounded-md overflow-hidden">
         <img
-          src={product.images[0]}
+          src={getAssetUrl(product.images[0])}
           alt={product.name}
           className="w-full h-full object-contain mix-blend-multiply group-hover:scale-105 transition-transform"
         />

@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, SlidersHorizontal, Heart } from 'lucide-react';
+import { getAssetUrl } from '../utils/assetUtils';
 import { Button, Card } from '../components/ui/core';
 import Footer from '../components/layout/Footer';
 import { useNavigate } from 'react-router-dom';
@@ -181,7 +182,7 @@ const ShopPage = ({ addToCart, setSelectedProduct, products = [], favorites = []
                                 >
                                     <div className="relative aspect-[4/5] bg-neutral-100 rounded-2xl overflow-hidden mb-6">
                                         <img
-                                            src={product.image}
+                                            src={getAssetUrl(product.image)}
                                             alt={product.name}
                                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-in-out"
                                         />

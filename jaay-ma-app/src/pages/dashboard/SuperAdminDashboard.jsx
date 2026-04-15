@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import DashboardLayout from '../../components/layout/DashboardLayout';
+import { getAssetUrl } from '../../utils/assetUtils';
 import { Card } from '../../components/ui/core';
 import { TrendingUp, Users, Activity, DollarSign, Package, ShoppingBag, AlertCircle, Plus, Search, Megaphone, Image, Layout, Store, Settings, CreditCard, Upload } from 'lucide-react';
 
@@ -105,7 +106,7 @@ const SuperAdminDashboard = ({ products = [] }) => {
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-3">
                                                 <div className="w-12 h-12 rounded-lg bg-neutral-100 overflow-hidden relative">
-                                                    <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+                                                    <img src={getAssetUrl(product.image)} alt={product.name} className="w-full h-full object-cover" />
                                                     {product.is_featured && (
                                                         <div className="absolute top-0 right-0 bg-yellow-400 w-3 h-3 rounded-bl-lg"></div>
                                                     )}

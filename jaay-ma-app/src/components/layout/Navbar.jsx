@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShoppingBag, Search, Menu, X, User, Bell, Heart } from 'lucide-react';
+import { getAssetUrl } from '../utils/assetUtils';
 import { useAuth } from '../../context/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 import logoUrl from '../../assets/logo.png';
@@ -397,7 +398,7 @@ const Navbar = ({ cartCount, favoritesCount = 0, onCartClick, onSearch, transpar
                                                 className="flex items-center gap-4 p-3 rounded-2xl hover:bg-neutral-50 transition-colors w-full text-left"
                                             >
                                                 <div className="h-16 w-16 rounded-xl bg-neutral-100 overflow-hidden flex-shrink-0">
-                                                    <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+                                                    <img src={getAssetUrl(product.image)} alt={product.name} className="w-full h-full object-cover" />
                                                 </div>
                                                 <div className="flex-1">
                                                     <h4 className="font-bold text-black text-lg">{product.name}</h4>

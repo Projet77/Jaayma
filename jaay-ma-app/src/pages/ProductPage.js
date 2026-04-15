@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ShoppingBag, Heart, Star, Truck, ShieldCheck, ArrowLeft, Plus, Minus, UserCircle } from 'lucide-react';
+import { getAssetUrl } from '../utils/assetUtils';
 import { Button } from '../components/ui/core';
 import Footer from '../components/layout/Footer';
 import { useNavigate } from 'react-router-dom';
@@ -89,7 +90,7 @@ const ProductPage = ({ selectedProduct, addToCart, goBack, setSelectedProduct, p
               className="aspect-square bg-neutral-100 rounded-3xl overflow-hidden relative group"
             >
               <img
-                src={images[activeImage]}
+                src={getAssetUrl(images[activeImage])}
                 alt={selectedProduct.name}
                 className="w-full h-full object-cover"
               />
@@ -102,7 +103,7 @@ const ProductPage = ({ selectedProduct, addToCart, goBack, setSelectedProduct, p
                   onClick={() => setActiveImage(idx)}
                   className={`aspect-square rounded-xl overflow-hidden border-2 transition-all ${activeImage === idx ? 'border-black' : 'border-transparent opacity-70 hover:opacity-100'}`}
                 >
-                  <img src={img} alt="" className="w-full h-full object-cover" />
+                  <img src={getAssetUrl(img)} alt="" className="w-full h-full object-cover" />
                 </button>
               ))}
             </div>
@@ -340,7 +341,7 @@ const ProductPage = ({ selectedProduct, addToCart, goBack, setSelectedProduct, p
                 }}
               >
                 <div className="aspect-[4/5] bg-neutral-100 rounded-2xl overflow-hidden mb-4 relative">
-                  <img src={product.image} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <img src={getAssetUrl(product.image)} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                   {product.stock <= 5 && (
                     <span className="absolute top-2 right-2 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded">Vite !</span>
                   )}

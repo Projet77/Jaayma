@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import DashboardLayout from '../../components/layout/DashboardLayout';
 import { Card } from '../../components/ui/core';
 import { Plus, Package, ShoppingBag, Search, Wallet, BarChart3, Upload, Loader } from 'lucide-react';
+import { getAssetUrl } from '../../utils/assetUtils';
 
 const VendorDashboard = ({ products = [] }) => {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -45,7 +46,7 @@ const VendorDashboard = ({ products = [] }) => {
             if (!res.ok) throw new Error("Erreur d'upload");
 
             const filePaths = await res.json();
-            const imageUrls = filePaths.map(path => `${process.env.REACT_APP_API_URL || 'http://localhost:5000'}${path}`);
+            const imageUrls = filePaths; // On garde les chemins relatifs (/uploads/...)
 
             setNewProduct({
                 ...newProduct,
@@ -262,7 +263,7 @@ const VendorDashboard = ({ products = [] }) => {
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-3">
                                                 <div className="w-12 h-12 rounded-lg bg-neutral-100 overflow-hidden">
-                                                    <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+                                                    <img src={getAssetUrl(product.image)} alt={product.name} className="w-full h-full object-cover" />
                                                 </div>
                                                 <div>
                                                     <p className="font-bold text-sm text-neutral-900">{product.name}</p>
@@ -458,7 +459,7 @@ const VendorDashboard = ({ products = [] }) => {
                                 {newProduct.images && newProduct.images.length > 0 && (
                                     <div className="flex gap-2 flex-wrap mt-2">
                                         {newProduct.images.map((img, idx) => (
-                                            <img key={idx} src={img} alt={`Aperçu ${idx + 1}`} className="h-20 w-20 object-cover rounded-lg border border-neutral-200" />
+                                            <img key={idx} src={getAssetUrl(img)} alt={`Aperçu ${idx + 1}`} className="h-20 w-20 object-cover rounded-lg border border-neutral-200" />
                                         ))}
                                     </div>
                                 )}

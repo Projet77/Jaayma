@@ -1,5 +1,5 @@
-
 import React from 'react';
+import { getAssetUrl } from '../utils/assetUtils';
 import { Icons } from '../icons';
 
 const WishlistPage = ({ wishlist, addToWishlist, addToCart, renderStars, formatPrice, setSelectedProduct, setCurrentView }) => (
@@ -35,7 +35,7 @@ const WishlistPage = ({ wishlist, addToWishlist, addToCart, renderStars, formatP
             <div key={product.id} className="bg-white rounded-lg shadow-md overflow-hidden">
               <div className="relative">
                 <img 
-                  src={product.images[0]} 
+                  src={getAssetUrl(product.images[0] || product.image)} 
                   alt={product.name}
                   className="w-full h-48 object-cover"
                 />

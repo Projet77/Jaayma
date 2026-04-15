@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Icons } from '../icons';
+import { getAssetUrl } from '../utils/assetUtils';
 import Button from '../components/ui/Button';
 import Card from '../components/ui/Card';
 import { useAuth } from '../context/AuthContext';
@@ -11,7 +12,7 @@ const CartPage = ({ cart, cartItemsCount, cartTotal, updateCartQuantity, removeF
   const [paymentMethod, setPaymentMethod] = useState('Orange Money');
 
   const handleWhatsAppCheckout = () => {
-    const phoneNumber = "221764297495"; // Numéro WhatsApp du client
+    const phoneNumber = "221764297495";
 
     let text = `Bonjour Jaay-Ma ! 👋\nJe souhaite passer une commande.\n\n`;
     if (user && user.name) {
@@ -24,7 +25,7 @@ const CartPage = ({ cart, cartItemsCount, cartTotal, updateCartQuantity, removeF
       text += `${index + 1}. *${item.product.name}* (x${item.quantity})\n`;
       text += `   Prix unitaire: ${formatPrice(item.product.price)}\n`;
       if (item.product.image) {
-        const imgUrl = item.product.image.startsWith('http') ? item.product.image : `${window.location.origin}${item.product.image}`;
+        const imgUrl = getAssetUrl(item.product.image);
         text += `   Aperçu : ${imgUrl}\n`;
       }
       text += `\n`;
@@ -72,7 +73,7 @@ const CartPage = ({ cart, cartItemsCount, cartTotal, updateCartQuantity, removeF
               {cart.map(item => (
                 <Card key={item.product.id} className="p-4 flex items-center gap-4 transition-all duration-300 hover:border-primary-200" hover={false}>
                   <img
-                    src={item.product.image}
+                    src={getAssetUrl(item.product.image)}
                     alt={item.product.name}
                     className="w-24 h-24 object-cover rounded-xl"
                   />
