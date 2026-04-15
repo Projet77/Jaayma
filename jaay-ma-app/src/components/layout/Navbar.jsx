@@ -195,12 +195,16 @@ const Navbar = ({ cartCount, favoritesCount = 0, onCartClick, onSearch, transpar
                                                         className={`px-4 py-3 hover:bg-neutral-50 border-b border-neutral-50 last:border-0 cursor-pointer transition-colors ${!notif.isRead ? 'bg-blue-50/30' : ''}`}
                                                     >
                                                         <div className="flex justify-between items-start mb-1">
-                                                            <p className={`text-sm ${!notif.isRead ? 'font-bold text-black' : 'font-medium text-neutral-700'}`}>{notif.title}</p>
+                                                            <p className={`text-sm ${!notif.isRead ? 'font-bold text-black' : 'font-medium text-neutral-700'}`}>
+                                                                {typeof notif.title === 'string' ? notif.title : 'Notification'}
+                                                            </p>
                                                             <span className="text-[10px] text-neutral-400">
-                                                                {new Date(notif.createdAt).toLocaleDateString()}
+                                                                {notif.createdAt ? new Date(notif.createdAt).toLocaleDateString() : ''}
                                                             </span>
                                                         </div>
-                                                        <p className="text-xs text-neutral-500 line-clamp-2">{notif.message}</p>
+                                                        <p className="text-xs text-neutral-500 line-clamp-2">
+                                                            {typeof notif.message === 'string' ? notif.message : ''}
+                                                        </p>
                                                     </div>
                                                 ))
                                             )}

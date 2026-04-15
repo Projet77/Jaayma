@@ -29,7 +29,7 @@ const LandingPage = ({ setSelectedProduct, products = [] }) => {
             {/* 1. HERO SECTION: Full Screen, Bold Typography */}
             <section className="relative h-screen w-full flex items-center justify-center bg-[#F4F2ED] overflow-hidden">
                 {/* Background Decoration */}
-                <div className="absolute inset-0 z-0 opacity-30 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay"></div>
+                {/* Supprimé noise.svg externe (source bloquée 403) */}
                 <motion.div style={{ y: y1 }} className="absolute px-4 text-[20vw] font-black text-white leading-none tracking-tighter mix-blend-difference pointer-events-none select-none z-10 w-full text-center">
                     JAAY-MA
                 </motion.div>
