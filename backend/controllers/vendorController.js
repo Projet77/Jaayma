@@ -38,4 +38,21 @@ const getVendorStats = async (req, res) => {
     }
 };
 
-module.exports = { getVendorStats };
+// @desc    Mettre à jour le profil du vendeur (notamment le nom de boutique)
+// @route   PUT /api/vendor/profile
+// @access  Private/Vendor
+const updateVendorProfile = async (req, res) => {
+    try {
+        const { name, shopName, phone, address, city } = req.body;
+        const user = await prisma.user.update({
+            where: { id: req.user.id },
+            data: { name, shopName, phone, address, city }
+        });
+        res.json(user);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Erreur lors de la mise à jour du profil' });
+    }
+};
+
+module.exports = { getVendorStats, updateVendorProfile };

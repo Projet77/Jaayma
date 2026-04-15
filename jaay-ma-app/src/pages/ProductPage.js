@@ -151,8 +151,11 @@ const ProductPage = ({ selectedProduct, addToCart, goBack, setSelectedProduct, p
               <h1 className="text-4xl md:text-5xl font-display font-medium text-black leading-tight mb-2">
                 {selectedProduct.name}
               </h1>
-              <p className="text-xl text-neutral-500 font-medium">
-                par <span className="text-black underline decoration-1 underline-offset-4">{selectedProduct.vendorName || (typeof selectedProduct.vendor === 'string' ? selectedProduct.vendor : (selectedProduct.vendor?.name || "La Boutique"))}</span>
+              <p className="text-xl text-neutral-500 font-medium flex items-center gap-2">
+                par <span className="text-black underline underline-offset-4 decoration-black/20 hover:decoration-black transition-colors cursor-pointer">{selectedProduct.vendorName || "La Boutique"}</span>
+                {selectedProduct.vendorName && (
+                  <span className="text-[10px] bg-neutral-100 text-neutral-600 px-2 py-0.5 rounded-full font-bold uppercase tracking-tighter">Boutique</span>
+                )}
               </p>
             </div>
 

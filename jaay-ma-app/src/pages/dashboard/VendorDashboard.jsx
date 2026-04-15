@@ -12,6 +12,7 @@ const VendorDashboard = ({ products = [] }) => {
 
     // États pour les données dynamiques
     const [stats, setStats] = useState({ revenue: 0, ordersCount: 0, activeProducts: 0, recentOrders: [] });
+    const [vendorProfile, setVendorProfile] = useState({ name: '', shopName: '', phone: '', address: '', city: '' });
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
 
@@ -62,19 +63,37 @@ const VendorDashboard = ({ products = [] }) => {
     };
 
     useEffect(() => {
-        const fetchVendorStats = async () => {
+        const fetchVendorData = async () => {
             try {
                 const token = localStorage.getItem('token');
                 if (!token) throw new Error("Non authentifié");
 
-                const res = await fetch((process.env.REACT_APP_API_URL || 'http://localhost:5000') + '/api/vendor/stats', {
+                // Récupérer stats
+                const resStats = await fetch((process.env.REACT_APP_API_URL || 'http://localhost:5000') + '/api/vendor/stats', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                // Récupérer profil (on peut utiliser l'endpoint de stats s'il renvoie le user, ou plus simple, l'endpoint /me si existant, mais ici on va utiliser /api/auth/me ou similaire s'il existe, sinon on va l'ajouter ou utiliser un endpoint dédié)
+                // Pour l'instant on va assumer qu'on a besoin d'un endpoint /api/vendor/profile ou utiliser les infos du token
+                const resProfile = await fetch((process.env.REACT_APP_API_URL || 'http://localhost:5000') + '/api/auth/me', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
 
-                if (!res.ok) throw new Error("Erreur de récupération des statistiques");
+                if (resStats.ok) {
+                    const data = await resStats.json();
+                    setStats(data);
+                }
 
-                const data = await res.json();
-                setStats(data);
+                if (resProfile.ok) {
+                    const profileData = await resProfile.json();
+                    setVendorProfile({
+                        name: profileData.name || '',
+                        shopName: profileData.shopName || '',
+                        phone: profileData.phone || '',
+                        address: profileData.address || '',
+                        city: profileData.city || ''
+                    });
+                }
             } catch (err) {
                 setError(err.message);
             } finally {
@@ -82,8 +101,33 @@ const VendorDashboard = ({ products = [] }) => {
             }
         };
 
-        fetchVendorStats();
+        fetchVendorData();
     }, []);
+
+    const handleUpdateProfile = async (e) => {
+        e.preventDefault();
+        setIsSubmitting(true);
+        try {
+            const token = localStorage.getItem('token');
+            const res = await fetch((process.env.REACT_APP_API_URL || 'http://localhost:5000') + '/api/vendor/profile', {
+                method: 'PUT',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(vendorProfile)
+            });
+
+            if (!res.ok) throw new Error("Erreur lors de la mise à jour du profil");
+            
+            alert("Profil mis à jour avec succès !");
+            window.location.reload();
+        } catch (err) {
+            alert(err.message);
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
 
     const handleAddProduct = async (e) => {
         e.preventDefault();
@@ -379,7 +423,7 @@ const VendorDashboard = ({ products = [] }) => {
         <div className="max-w-2xl space-y-8">
             <h2 className="text-xl font-bold text-neutral-800">Paramètres de la Boutique</h2>
             <Card className="p-6 border border-neutral-100">
-                <div className="space-y-6">
+                <form onSubmit={handleUpdateProfile} className="space-y-6">
                     <div className="flex items-center gap-4">
                         <div className="w-20 h-20 bg-neutral-100 rounded-full flex items-center justify-center border-2 border-dashed border-neutral-300 cursor-pointer hover:border-black transition-colors">
                             <Upload className="w-6 h-6 text-neutral-400" />
@@ -391,20 +435,30 @@ const VendorDashboard = ({ products = [] }) => {
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
+                            <label className="text-sm font-bold">Nom du Responsable</label>
+                            <input type="text" value={vendorProfile.name} onChange={e => setVendorProfile({...vendorProfile, name: e.target.value})} className="w-full px-4 py-2 border border-neutral-200 rounded-xl" />
+                        </div>
+                        <div className="space-y-2">
                             <label className="text-sm font-bold">Nom de la boutique</label>
-                            <input type="text" defaultValue="Ma Boutique" className="w-full px-4 py-2 border border-neutral-200 rounded-xl" />
+                            <input type="text" value={vendorProfile.shopName} onChange={e => setVendorProfile({...vendorProfile, shopName: e.target.value})} className="w-full px-4 py-2 border border-neutral-200 rounded-xl" placeholder="Ex: Ma Super Boutique" />
                         </div>
                         <div className="space-y-2">
                             <label className="text-sm font-bold">Téléphone</label>
-                            <input type="tel" defaultValue="+221 77 ..." className="w-full px-4 py-2 border border-neutral-200 rounded-xl" />
+                            <input type="tel" value={vendorProfile.phone} onChange={e => setVendorProfile({...vendorProfile, phone: e.target.value})} className="w-full px-4 py-2 border border-neutral-200 rounded-xl" />
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-sm font-bold">Ville</label>
+                            <input type="text" value={vendorProfile.city} onChange={e => setVendorProfile({...vendorProfile, city: e.target.value})} className="w-full px-4 py-2 border border-neutral-200 rounded-xl" />
                         </div>
                         <div className="space-y-2 md:col-span-2">
-                            <label className="text-sm font-bold">Description</label>
-                            <textarea rows="3" defaultValue="Une brève description..." className="w-full px-4 py-2 border border-neutral-200 rounded-xl" />
+                            <label className="text-sm font-bold">Adresse</label>
+                            <input type="text" value={vendorProfile.address} onChange={e => setVendorProfile({...vendorProfile, address: e.target.value})} className="w-full px-4 py-2 border border-neutral-200 rounded-xl" />
                         </div>
                     </div>
-                    <button className="bg-black text-white px-6 py-3 rounded-xl font-bold hover:bg-neutral-800">Enregistrer</button>
-                </div>
+                    <button type="submit" disabled={isSubmitting} className="bg-black text-white px-6 py-3 rounded-xl font-bold hover:bg-neutral-800 disabled:opacity-50">
+                        {isSubmitting ? 'Enregistrement...' : 'Enregistrer les modifications'}
+                    </button>
+                </form>
             </Card>
         </div>
     );

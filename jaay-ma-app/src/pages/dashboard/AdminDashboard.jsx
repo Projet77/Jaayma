@@ -29,6 +29,8 @@ const AdminDashboard = ({ products = [] }) => {
     // Modal Utilisateur
     const [selectedUser, setSelectedUser] = useState(null);
     const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false);
+    const [isEditUserModalOpen, setIsEditUserModalOpen] = useState(false);
+    const [editingUser, setEditingUser] = useState(null);
     const [newUser, setNewUser] = useState({ name: '', email: '', password: '', role: 'client' });
 
     // Modals et États Promotions
@@ -157,6 +159,50 @@ const AdminDashboard = ({ products = [] }) => {
             alert(err.message);
         } finally {
             setIsSubmitting(false);
+        }
+    };
+
+    const handleUpdateUser = async (e) => {
+        e.preventDefault();
+        setIsSubmitting(true);
+        try {
+            const token = localStorage.getItem('token');
+            const res = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/admin/users/${editingUser.id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify(editingUser)
+            });
+
+            if (!res.ok) {
+                const data = await res.json();
+                throw new Error(data.message || "Erreur lors de la mise à jour");
+            }
+
+            alert("Utilisateur mis à jour !");
+            setIsEditUserModalOpen(false);
+            window.location.reload();
+        } catch (err) {
+            alert(err.message);
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    const handleDeleteUser = async (userId) => {
+        if (!window.confirm("Voulez-vous vraiment supprimer cet utilisateur ? Cette action est irréversible.")) return;
+        try {
+            const token = localStorage.getItem('token');
+            const res = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/admin/users/${userId}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (!res.ok) throw new Error("Erreur lors de la suppression");
+
+            alert("Utilisateur supprimé !");
+            window.location.reload();
+        } catch (err) {
+            alert(err.message);
         }
     };
 
@@ -808,12 +854,26 @@ const AdminDashboard = ({ products = [] }) => {
                                             {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A'}
                                         </td>
                                         <td className="px-6 py-4 text-right">
-                                            <button
-                                                onClick={() => setSelectedUser(user)}
-                                                className="text-xs font-bold text-black border border-neutral-200 px-3 py-1.5 rounded-lg hover:bg-neutral-100 transition-colors"
-                                            >
-                                                Détails
-                                            </button>
+                                            <div className="flex justify-end gap-2">
+                                                <button
+                                                    onClick={() => setSelectedUser(user)}
+                                                    className="text-xs font-bold text-neutral-600 border border-neutral-200 px-3 py-1.5 rounded-lg hover:bg-neutral-100 transition-colors"
+                                                >
+                                                    Détails
+                                                </button>
+                                                <button
+                                                    onClick={() => { setEditingUser(user); setIsEditUserModalOpen(true); }}
+                                                    className="text-xs font-bold text-blue-600 border border-blue-100 px-3 py-1.5 rounded-lg hover:bg-blue-50 transition-colors"
+                                                >
+                                                    Modifier
+                                                </button>
+                                                <button
+                                                    onClick={() => handleDeleteUser(user.id)}
+                                                    className="text-xs font-bold text-red-600 border border-red-100 px-3 py-1.5 rounded-lg hover:bg-red-50 transition-colors"
+                                                >
+                                                    Supprimer
+                                                </button>
+                                            </div>
                                         </td>
                                     </tr>
                                 ))}
@@ -1163,6 +1223,46 @@ const AdminDashboard = ({ products = [] }) => {
                                 Fermer
                             </button>
                         </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Modal d'Edition d'Utilisateur */}
+            {isEditUserModalOpen && editingUser && (
+                <div className="fixed inset-0 bg-black/50 z-[60] flex items-center justify-center p-4">
+                    <div className="bg-white rounded-2xl w-full max-w-md overflow-hidden relative shadow-2xl p-6">
+                        <button onClick={() => setIsEditUserModalOpen(false)} className="absolute top-4 right-4 p-2 hover:bg-neutral-100 rounded-full transition-colors">
+                            <X className="w-5 h-5 text-neutral-500" />
+                        </button>
+                        <h3 className="text-xl font-bold mb-6">Modifier l'Utilisateur</h3>
+
+                        <form onSubmit={handleUpdateUser} className="space-y-4">
+                            <div className="space-y-1">
+                                <label className="text-sm font-bold text-neutral-700">Nom complet *</label>
+                                <input required type="text" value={editingUser.name} onChange={e => setEditingUser({ ...editingUser, name: e.target.value })} className="w-full px-4 py-2 border border-neutral-200 rounded-xl focus:border-black outline-none" />
+                            </div>
+                            <div className="space-y-1">
+                                <label className="text-sm font-bold text-neutral-700">Email *</label>
+                                <input required type="email" value={editingUser.email} onChange={e => setEditingUser({ ...editingUser, email: e.target.value })} className="w-full px-4 py-2 border border-neutral-200 rounded-xl focus:border-black outline-none" />
+                            </div>
+                            <div className="space-y-1">
+                                <label className="text-sm font-bold text-neutral-700">Rôle *</label>
+                                <select value={editingUser.role} onChange={e => setEditingUser({ ...editingUser, role: e.target.value })} className="w-full px-4 py-2 border border-neutral-200 rounded-xl focus:border-black outline-none bg-white">
+                                    <option value="client">Client</option>
+                                    <option value="vendor">Vendeur</option>
+                                    <option value="admin">Administrateur</option>
+                                </select>
+                            </div>
+
+                            <div className="pt-6 border-t border-neutral-100 flex justify-end gap-3 mt-4">
+                                <button type="button" onClick={() => setIsEditUserModalOpen(false)} className="px-5 py-2.5 rounded-xl font-bold bg-neutral-100 text-neutral-700 hover:bg-neutral-200 transition-colors">
+                                    Annuler
+                                </button>
+                                <button type="submit" disabled={isSubmitting} className="px-5 py-2.5 rounded-xl font-bold bg-black text-white hover:bg-neutral-800 disabled:opacity-50 shadow-sm transition-colors">
+                                    {isSubmitting ? 'Mise à jour...' : 'Enregistrer'}
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             )}

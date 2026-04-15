@@ -56,7 +56,7 @@ const getProducts = async (req, res) => {
 
         const products = await prisma.product.findMany({
             where: whereClause,
-            include: { vendor: { select: { name: true } } },
+            include: { vendor: { select: { name: true, shopName: true } } },
             orderBy: orderByClause
         });
 
@@ -64,7 +64,7 @@ const getProducts = async (req, res) => {
         const flatProducts = products.map(p => ({
             ...p,
             vendor: undefined,
-            vendorName: p.vendor?.name || null,
+            vendorName: p.vendor?.shopName || p.vendor?.name || null,
         }));
 
         res.status(200).json(flatProducts);
@@ -80,7 +80,7 @@ const getProductById = async (req, res) => {
     try {
         const product = await prisma.product.findUnique({
             where: { id: req.params.id },
-            include: { vendor: { select: { name: true } } }
+            include: { vendor: { select: { name: true, shopName: true } } }
         });
 
         if (product) {
@@ -88,7 +88,7 @@ const getProductById = async (req, res) => {
             const flatProduct = {
                 ...product,
                 vendor: undefined,
-                vendorName: product.vendor?.name || null
+                vendorName: product.vendor?.shopName || product.vendor?.name || null
             };
             res.status(200).json(flatProduct);
         } else {

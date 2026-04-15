@@ -21,6 +21,7 @@ model User {
   phone     String?
   address   String?
   city      String?
+  shopName  String?  // Nouveau champ pour le nom de la boutique des vendeurs
   updatedAt DateTime @updatedAt
 
   favorites Favorite[] // Relation avec les favoris de l'utilisateur

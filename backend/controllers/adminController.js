@@ -70,4 +70,37 @@ const getAdminOrders = async (req, res) => {
     }
 };
 
-module.exports = { getAdminStats, getAdminUsers, getAdminOrders };
+// @desc    Mettre à jour un utilisateur
+// @route   PUT /api/admin/users/:id
+// @access  Private/Admin
+const updateUser = async (req, res) => {
+    try {
+        const { name, email, role } = req.body;
+        const user = await prisma.user.update({
+            where: { id: req.params.id },
+            data: { name, email, role }
+        });
+        res.json(user);
+    } catch (error) {
+        console.error(error);
+        if (error.code === 'P2002') return res.status(400).json({ message: 'Email déjà utilisé' });
+        res.status(500).json({ message: 'Erreur lors de la mise à jour' });
+    }
+};
+
+// @desc    Supprimer un utilisateur
+// @route   DELETE /api/admin/users/:id
+// @access  Private/Admin
+const deleteUser = async (req, res) => {
+    try {
+        await prisma.user.delete({
+            where: { id: req.params.id }
+        });
+        res.json({ message: 'Utilisateur supprimé avec succès' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Erreur lors de la suppression' });
+    }
+};
+
+module.exports = { getAdminStats, getAdminUsers, getAdminOrders, updateUser, deleteUser };
