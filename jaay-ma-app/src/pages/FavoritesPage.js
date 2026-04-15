@@ -69,7 +69,7 @@ const FavoritesPage = ({ favorites, toggleFavorite, addToCart, setSelectedProduc
                                 </div>
                             </div>
                             <div className="p-5">
-                                <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 mb-1">{product.category}</p>
+                                <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 mb-1">{typeof product.category === 'string' ? product.category : (product.category?.name || 'Catégorie')}</p>
                                 <div className="flex justify-between items-start gap-4">
                                     <h3 className="font-medium text-lg leading-tight group-hover:text-primary transition-colors line-clamp-2">
                                         {product.name}

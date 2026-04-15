@@ -401,7 +401,7 @@ const Navbar = ({ cartCount, favoritesCount = 0, onCartClick, onSearch, transpar
                                                 </div>
                                                 <div className="flex-1">
                                                     <h4 className="font-bold text-black text-lg">{product.name}</h4>
-                                                    <p className="text-sm text-neutral-500 uppercase font-medium">{product.category}</p>
+                                                    <p className="text-sm text-neutral-500 uppercase font-medium">{typeof product.category === 'string' ? product.category : (product.category?.name || 'Catégorie')}</p>
                                                 </div>
                                                 <div className="font-bold text-black whitespace-nowrap">
                                                     {new Intl.NumberFormat('fr-SN', { style: 'currency', currency: 'XOF', minimumFractionDigits: 0 }).format(product.price)}

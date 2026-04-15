@@ -119,9 +119,9 @@ const SuperAdminDashboard = ({ products = [] }) => {
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-2">
                                                 <div className="w-6 h-6 rounded-full bg-neutral-200 flex items-center justify-center text-xs font-bold text-neutral-600">
-                                                    {product.vendor.charAt(0)}
+                                                    {(product.vendorName || 'V').charAt(0)}
                                                 </div>
-                                                <span className="text-sm font-medium text-neutral-700">{product.vendor}</span>
+                                                <span className="text-sm font-medium text-neutral-700">{product.vendorName || 'Non Spécifié'}</span>
                                             </div>
                                         </td>
                                         <td className="px-6 py-4">

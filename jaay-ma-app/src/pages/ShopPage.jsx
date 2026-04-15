@@ -217,7 +217,7 @@ const ShopPage = ({ addToCart, setSelectedProduct, products = [], favorites = []
                                             <h3 className="font-bold text-base leading-tight group-hover:underline decoration-1 underline-offset-4">{product.name}</h3>
                                             <span className="font-medium text-sm whitespace-nowrap">{new Intl.NumberFormat('fr-SN', { style: 'currency', currency: 'XOF', minimumFractionDigits: 0 }).format(product.price)}</span>
                                         </div>
-                                        <p className="text-xs text-neutral-500 mb-2 uppercase tracking-wide font-bold">{product.category}</p>
+                                        <p className="text-xs text-neutral-500 mb-2 uppercase tracking-wide font-bold">{typeof product.category === 'string' ? product.category : (product.category?.name || 'Général')}</p>
                                     </div>
                                 </Card>
                             </motion.div>

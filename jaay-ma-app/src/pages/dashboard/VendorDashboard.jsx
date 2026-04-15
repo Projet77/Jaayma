@@ -266,7 +266,7 @@ const VendorDashboard = ({ products = [] }) => {
                                                 </div>
                                                 <div>
                                                     <p className="font-bold text-sm text-neutral-900">{product.name}</p>
-                                                    <p className="text-xs text-neutral-500">{product.category}</p>
+                                                    <p className="text-xs text-neutral-500">{typeof product.category === 'string' ? product.category : (product.category?.name || 'Catégorie')}</p>
                                                 </div>
                                             </div>
                                         </td>

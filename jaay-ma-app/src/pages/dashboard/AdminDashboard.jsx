@@ -494,16 +494,16 @@ const AdminDashboard = ({ products = [] }) => {
                                                         {product.name}
                                                         {product.isFeatured && <span title="Produit Mis en Avant" className="text-yellow-500">⭐</span>}
                                                     </p>
-                                                    <p className="text-xs text-neutral-500">{product.category}</p>
+                                                    <p className="text-xs text-neutral-500">{typeof product.category === 'string' ? product.category : 'N/A'}</p>
                                                 </div>
                                             </div>
                                         </td>
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-2">
                                                 <div className="w-6 h-6 rounded-full bg-neutral-200 flex items-center justify-center text-xs font-bold text-neutral-600 uppercase">
-                                                    {(product.vendor?.name || "V").charAt(0)}
+                                                    {(product.vendorName || "V").charAt(0)}
                                                 </div>
-                                                <span className="text-sm font-medium text-neutral-700 line-clamp-1">{product.vendor?.name || "Non Spécifié"}</span>
+                                                <span className="text-sm font-medium text-neutral-700 line-clamp-1">{product.vendorName || "Non Spécifié"}</span>
                                             </div>
                                         </td>
                                         <td className="px-6 py-4">

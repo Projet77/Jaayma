@@ -133,7 +133,7 @@ const ProductPage = ({ selectedProduct, addToCart, goBack, setSelectedProduct, p
             <div>
               <div className="flex items-center gap-2 mb-4">
                 <span className="bg-black text-white text-[10px] font-bold px-2 py-1 uppercase tracking-wider rounded-sm">
-                  {selectedProduct.category}
+                  {typeof selectedProduct.category === 'string' ? selectedProduct.category : (selectedProduct.category?.name || "Général")}
                 </span>
                 {selectedProduct.stock <= 5 && (
                   <span className="bg-red-500 text-white text-[10px] font-bold px-2 py-1 uppercase tracking-wider rounded-sm">
@@ -151,7 +151,7 @@ const ProductPage = ({ selectedProduct, addToCart, goBack, setSelectedProduct, p
                 {selectedProduct.name}
               </h1>
               <p className="text-xl text-neutral-500 font-medium">
-                par <span className="text-black underline decoration-1 underline-offset-4">{selectedProduct.vendor || "La Boutique"}</span>
+                par <span className="text-black underline decoration-1 underline-offset-4">{selectedProduct.vendorName || (typeof selectedProduct.vendor === 'string' ? selectedProduct.vendor : (selectedProduct.vendor?.name || "La Boutique"))}</span>
               </p>
             </div>
 
