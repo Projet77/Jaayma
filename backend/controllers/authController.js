@@ -161,7 +161,18 @@ const googleLogin = async (req, res) => {
             return res.status(400).json({ message: 'Token Google manquant.' });
         }
 
-        const ticket = await googleClient.verifyIdToken({ idToken });
+        const clientId = process.env.GOOGLE_CLIENT_ID;
+
+        if (!clientId) {
+            console.error('GOOGLE_CLIENT_ID non configuré sur le serveur !');
+            return res.status(500).json({ message: 'Configuration Google manquante sur le serveur. Contactez l\'administrateur.' });
+        }
+
+        const ticket = await googleClient.verifyIdToken({
+            idToken,
+            audience: clientId, // Vérification stricte de l'audience
+        });
+
         const payload = ticket.getPayload();
         const { email } = payload;
 
@@ -185,8 +196,8 @@ const googleLogin = async (req, res) => {
         });
 
     } catch (error) {
-        console.error("Erreur Google Login:", error);
-        res.status(401).json({ message: 'Token Google invalide ou expiré.' });
+        console.error("Erreur Google Login:", error.message);
+        res.status(401).json({ message: 'Token Google invalide ou expiré. Assurez-vous que GOOGLE_CLIENT_ID est configuré sur le serveur.' });
     }
 };
 
