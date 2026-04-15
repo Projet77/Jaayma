@@ -59,7 +59,15 @@ const getProducts = async (req, res) => {
             include: { vendor: { select: { name: true } } },
             orderBy: orderByClause
         });
-        res.status(200).json(products);
+
+        // Aplatir l'objet vendor pour ne pas envoyer {name: "..."} mais une chaîne simple
+        const flatProducts = products.map(p => ({
+            ...p,
+            vendor: undefined,
+            vendorName: p.vendor?.name || null,
+        }));
+
+        res.status(200).json(flatProducts);
     } catch (error) {
         res.status(500).json({ message: 'Server Error', detail: error.message, stack: error.stack });
     }
@@ -71,11 +79,18 @@ const getProducts = async (req, res) => {
 const getProductById = async (req, res) => {
     try {
         const product = await prisma.product.findUnique({
-            where: { id: req.params.id }
+            where: { id: req.params.id },
+            include: { vendor: { select: { name: true } } }
         });
 
         if (product) {
-            res.status(200).json(product);
+            // Aplatir l'objet vendor
+            const flatProduct = {
+                ...product,
+                vendor: undefined,
+                vendorName: product.vendor?.name || null
+            };
+            res.status(200).json(flatProduct);
         } else {
             res.status(404).json({ message: 'Product not found' });
         }
