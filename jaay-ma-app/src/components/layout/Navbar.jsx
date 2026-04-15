@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShoppingBag, Search, Menu, X, User, Bell, Heart } from 'lucide-react';
-import { getAssetUrl } from '../utils/assetUtils';
+import { getAssetUrl } from '../../utils/assetUtils';
 import { useAuth } from '../../context/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 import logoUrl from '../../assets/logo.png';
