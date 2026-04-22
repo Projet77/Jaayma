@@ -12,7 +12,6 @@ const LoginPage = () => {
   const [loginForm, setLoginForm] = React.useState({ email: '', password: '' });
   const { login, loginWithGoogle } = useAuth();
   const [error, setError] = React.useState('');
-  const [googleLoading, setGoogleLoading] = React.useState(false);
 
   const handleLogin = async () => {
     setError('');
@@ -36,8 +35,6 @@ const LoginPage = () => {
       else navigate('/');
     } catch (err) {
       setError(err.message);
-    } finally {
-      setGoogleLoading(false);
     }
   }, [loginWithGoogle, navigate]);
 

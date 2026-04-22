@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import DashboardLayout from '../../components/layout/DashboardLayout';
 import { Card } from '../../components/ui/core';
-import { Package, ShoppingBag, AlertCircle, Plus, Search, Filter, Megaphone, Tag, ArrowRight, TrendingUp, Store, Users, Loader, X, Settings, CreditCard, Layout, Image, Upload, ShieldCheck } from 'lucide-react';
+import { Package, ShoppingBag, AlertCircle, Plus, Search, Filter, Megaphone, Tag, ArrowRight, TrendingUp, Store, Users, Loader, X, Settings, CreditCard, Layout, Image } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { getAssetUrl } from '../../utils/assetUtils';
 
