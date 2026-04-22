@@ -175,10 +175,14 @@ const googleLogin = async (req, res) => {
             console.error('GOOGLE_CLIENT_ID non configuré sur le serveur !');
             return res.status(500).json({ message: 'Configuration Google manquante sur le serveur. Contactez l\'administrateur.' });
         }
+        
+        // Décodage pour vérifier d'abord à qui ce token est destiné (très utile si web + mobile ont des ID différents)
+        const decodedToken = jwt.decode(idToken);
+        const tokenAudience = decodedToken && decodedToken.aud ? decodedToken.aud : clientId;
 
         const ticket = await googleClient.verifyIdToken({
             idToken,
-            audience: clientId, // Vérification stricte de l'audience
+            audience: [clientId, tokenAudience], // On permet l'ID du serveur ET l'ID de la requête (utile si Vercel/Expo partagent le backend)
         });
 
         const payload = ticket.getPayload();
@@ -206,7 +210,7 @@ const googleLogin = async (req, res) => {
 
     } catch (error) {
         console.error("Erreur Google Login:", error.message);
-        res.status(401).json({ message: 'Token Google invalide ou expiré. Assurez-vous que GOOGLE_CLIENT_ID est correctement configuré sur le serveur.' });
+        res.status(401).json({ message: `L'authentification Google a échoué. Cause exacte : ${error.message}` });
     }
 };
 
