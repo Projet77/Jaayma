@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import DashboardLayout from '../../components/layout/DashboardLayout';
 import { Card } from '../../components/ui/core';
 import { Package, ShoppingBag, AlertCircle, Plus, Search, Filter, Megaphone, Tag, ArrowRight, TrendingUp, Store, Users, Loader, X } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 import { getAssetUrl } from '../../utils/assetUtils';
 
 const AdminDashboard = ({ products = [] }) => {
@@ -44,6 +45,40 @@ const AdminDashboard = ({ products = [] }) => {
     // Modal Bannières Pub
     const [banners, setBanners] = useState([]);
     const [isBannerModalOpen, setIsBannerModalOpen] = useState(false);
+
+    // Meta Pixel pour l'Admin
+    const { user: authUser } = useAuth();
+    const [metaPixelId, setMetaPixelId] = useState(authUser?.metaPixelId || '');
+    const [isSavingPixel, setIsSavingPixel] = useState(false);
+
+    const handleSavePixel = async () => {
+        try {
+            setIsSavingPixel(true);
+            const token = localStorage.getItem('token');
+            const res = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/admin/users/${authUser.id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ metaPixelId })
+            });
+
+            if (!res.ok) throw new Error("Erreur lors de l'enregistrement de l'ID Pixel");
+            
+            // On met à jour l'utilisateur dans le local storage pour reflet immédiat
+            const updatedUser = await res.json();
+            const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
+            localStorage.setItem('user', JSON.stringify({ ...storedUser, metaPixelId: updatedUser.metaPixelId }));
+            
+            alert("✅ ID Pixel Meta configuré avec succès !");
+            window.location.reload();
+        } catch (error) {
+            alert(error.message);
+        } finally {
+            setIsSavingPixel(false);
+        }
+    };
 
     const uploadFileHandler = async (e, isEdit = false) => {
         const files = Array.from(e.target.files);
@@ -657,6 +692,44 @@ const AdminDashboard = ({ products = [] }) => {
                     <div className="absolute right-0 bottom-0 w-64 h-64 bg-primary/20 rounded-full blur-3xl -mr-16 -mb-16"></div>
                 </div>
             </div>
+
+            {/* Pixel Meta Configuration */}
+            <Card className="p-6 border border-neutral-100 bg-blue-50/30">
+                <div className="flex items-start gap-4">
+                    <div className="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center shrink-0">
+                        <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                        </svg>
+                    </div>
+                    <div className="flex-1">
+                        <h3 className="font-bold text-lg mb-1">Pixel Meta (Facebook Ads)</h3>
+                        <p className="text-neutral-500 text-sm mb-4">
+                            Connectez votre Pixel Facebook pour analyser le trafic de votre plateforme et optimiser vos campagnes publicitaires (Événements envoyés : "PageView" et "AddToCart" complets).
+                        </p>
+                        <div className="flex flex-col sm:flex-row gap-3">
+                            <input
+                                type="text"
+                                placeholder="Entrez l'ID du Pixel (Ex: 1234567890123)"
+                                value={metaPixelId}
+                                onChange={(e) => setMetaPixelId(e.target.value)}
+                                className="flex-1 px-4 py-2 bg-white border border-neutral-200 rounded-xl focus:border-blue-600 outline-none"
+                            />
+                            <button 
+                                onClick={handleSavePixel}
+                                disabled={isSavingPixel}
+                                className="px-6 py-2 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-50"
+                            >
+                                {isSavingPixel ? 'Enregistrement...' : 'Enregistrer le Pixel'}
+                            </button>
+                        </div>
+                        {metaPixelId && (
+                            <p className="mt-2 text-xs font-medium text-green-600 flex items-center gap-1">
+                                <AlertCircle className="w-3 h-3" /> Le Pixel Meta est actuellement actif sur la plateforme.
+                            </p>
+                        )}
+                    </div>
+                </div>
+            </Card>
 
             {/* Active Campaigns */}
             <Card className="p-6 border border-neutral-100">

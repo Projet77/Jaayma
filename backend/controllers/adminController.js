@@ -75,10 +75,17 @@ const getAdminOrders = async (req, res) => {
 // @access  Private/Admin
 const updateUser = async (req, res) => {
     try {
-        const { name, email, role } = req.body;
+        const { name, email, role, metaPixelId } = req.body;
+        
+        const dataToUpdate = {};
+        if (name) dataToUpdate.name = name;
+        if (email) dataToUpdate.email = email;
+        if (role) dataToUpdate.role = role;
+        if (metaPixelId !== undefined) dataToUpdate.metaPixelId = metaPixelId;
+
         const user = await prisma.user.update({
             where: { id: req.params.id },
-            data: { name, email, role }
+            data: dataToUpdate
         });
         res.json(user);
     } catch (error) {
