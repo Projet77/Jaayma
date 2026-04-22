@@ -22,6 +22,7 @@ model User {
   address   String?
   city      String?
   shopName  String?  // Nouveau champ pour le nom de la boutique des vendeurs
+  metaPixelId String? // ID du Pixel Meta pour les campagnes (Admin/Vendor)
   updatedAt DateTime @updatedAt
 
   favorites Favorite[] // Relation avec les favoris de l'utilisateur

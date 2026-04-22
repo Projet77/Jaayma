@@ -15,6 +15,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import logoUrl from './assets/logo.png';
 
 import { AuthProvider, useAuth } from './context/AuthContext';
+import ReactPixel from 'react-facebook-pixel';
 
 function App() {
   return (
@@ -64,6 +65,19 @@ function AppContent() {
     }, 2800); // Dure au moins 2.8s
     return () => clearTimeout(timer);
   }, []);
+
+  // Initialize Meta Pixel
+  useEffect(() => {
+    if (user && user.metaPixelId) {
+      console.log("Initializing Meta Pixel with ID:", user.metaPixelId);
+      const options = {
+        autoConfig: true, // set pixel's autoConfig. More info: https://developers.facebook.com/docs/facebook-pixel/advanced/
+        debug: false, // enable logs
+      };
+      ReactPixel.init(user.metaPixelId, undefined, options);
+      ReactPixel.pageView(); // Record a page view by default
+    }
+  }, [user]);
 
   // Load products (public)
   useEffect(() => {
@@ -146,6 +160,16 @@ function AppContent() {
       }
       return [...prev, { product, quantity: qty }];
     });
+    
+    // Track AddToCart event
+    if (user && user.metaPixelId) {
+       ReactPixel.track('AddToCart', {
+          content_ids: [product.id],
+          content_name: product.name,
+          currency: 'XOF',
+          value: product.price * qty
+       });
+    }
   };
 
   const removeFromCart = (productId) => {

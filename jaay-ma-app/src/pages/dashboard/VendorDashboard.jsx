@@ -12,7 +12,7 @@ const VendorDashboard = ({ products = [] }) => {
 
     // États pour les données dynamiques
     const [stats, setStats] = useState({ revenue: 0, ordersCount: 0, activeProducts: 0, recentOrders: [] });
-    const [vendorProfile, setVendorProfile] = useState({ name: '', shopName: '', phone: '', address: '', city: '' });
+    const [vendorProfile, setVendorProfile] = useState({ name: '', shopName: '', phone: '', address: '', city: '', metaPixelId: '' });
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
 
@@ -91,7 +91,8 @@ const VendorDashboard = ({ products = [] }) => {
                         shopName: profileData.shopName || '',
                         phone: profileData.phone || '',
                         address: profileData.address || '',
-                        city: profileData.city || ''
+                        city: profileData.city || '',
+                        metaPixelId: profileData.metaPixelId || ''
                     });
                 }
             } catch (err) {
@@ -453,6 +454,11 @@ const VendorDashboard = ({ products = [] }) => {
                         <div className="space-y-2 md:col-span-2">
                             <label className="text-sm font-bold">Adresse</label>
                             <input type="text" value={vendorProfile.address} onChange={e => setVendorProfile({...vendorProfile, address: e.target.value})} className="w-full px-4 py-2 border border-neutral-200 rounded-xl" />
+                        </div>
+                        <div className="space-y-2 md:col-span-2">
+                            <label className="text-sm font-bold">ID Pixel Meta (Facebook)</label>
+                            <input type="text" value={vendorProfile.metaPixelId} onChange={e => setVendorProfile({...vendorProfile, metaPixelId: e.target.value})} className="w-full px-4 py-2 border border-neutral-200 rounded-xl" placeholder="Ex: 123456789012345" />
+                            <p className="text-xs text-neutral-500">Ajoutez votre identifiant Pixel pour suivre les conversions sur vos produits.</p>
                         </div>
                     </div>
                     <button type="submit" disabled={isSubmitting} className="bg-black text-white px-6 py-3 rounded-xl font-bold hover:bg-neutral-800 disabled:opacity-50">

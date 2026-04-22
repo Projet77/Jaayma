@@ -43,10 +43,10 @@ const getVendorStats = async (req, res) => {
 // @access  Private/Vendor
 const updateVendorProfile = async (req, res) => {
     try {
-        const { name, shopName, phone, address, city } = req.body;
+        const { name, shopName, phone, address, city, metaPixelId } = req.body;
         const user = await prisma.user.update({
             where: { id: req.user.id },
-            data: { name, shopName, phone, address, city }
+            data: { name, shopName, phone, address, city, metaPixelId }
         });
         res.json(user);
     } catch (error) {

@@ -113,13 +113,15 @@ const loginUser = async (req, res) => {
                 email: user.email,
                 role: user.role,
                 shopName: user.shopName,
+                metaPixelId: user.metaPixelId,
                 token: generateToken(user.id),
                 user: {
                     id: user.id,
                     name: user.name,
                     email: user.email,
                     role: user.role,
-                    shopName: user.shopName
+                    shopName: user.shopName,
+                    metaPixelId: user.metaPixelId
                 }
             });
         } else {
@@ -145,6 +147,7 @@ const getMe = async (req, res) => {
                 email: user.email,
                 role: user.role,
                 shopName: user.shopName,
+                metaPixelId: user.metaPixelId,
             });
         } else {
             res.status(404).json({ message: 'User not found' });
@@ -196,8 +199,9 @@ const googleLogin = async (req, res) => {
             name: user.name,
             email: user.email,
             role: user.role,
+            metaPixelId: user.metaPixelId,
             token: generateToken(user.id),
-            user: { id: user.id, name: user.name, email: user.email, role: user.role }
+            user: { id: user.id, name: user.name, email: user.email, role: user.role, metaPixelId: user.metaPixelId }
         });
 
     } catch (error) {
