@@ -103,8 +103,9 @@ const AdminDashboard = ({ products = [] }) => {
             });
             if (!res.ok) throw new Error("Erreur d'upload");
 
-            const filePaths = await res.json();
-            const imageUrls = filePaths.map(path => path);
+            // Cloudinary retourne { imageUrls: [...] }
+            const data = await res.json();
+            const imageUrls = data.imageUrls || data;
 
             if (isEdit) {
                 setEditingProduct({
@@ -317,12 +318,14 @@ const AdminDashboard = ({ products = [] }) => {
                 body: formData
             });
             if (!uploadRes.ok) throw new Error("Erreur upload");
+            // Cloudinary retourne { imageUrl: '...' }
             const uploadData = await uploadRes.json();
+            const imageUrl = uploadData.imageUrl || uploadData;
 
             const res = await fetch((process.env.REACT_APP_API_URL || 'http://localhost:5000') + '/api/banners', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                body: JSON.stringify({ imageUrl: uploadData.imageUrl })
+                body: JSON.stringify({ imageUrl })
             });
             if (!res.ok) throw new Error("Erreur création bannière");
             window.location.reload();
