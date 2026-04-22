@@ -142,3 +142,16 @@ model Review {
   // Un utilisateur ne peut donner qu'un seul avis par produit
   @@unique([userId, productId])
 }
+
+model SystemSettings {
+  id              String   @id @default("singleton")
+  platformName    String   @default("Jaay-Ma")
+  supportEmail    String   @default("support@jaay-ma.sn")
+  supportPhone    String   @default("+221 77 000 00 00")
+  defaultCurrency String   @default("FCFA (XOF)")
+  paymentMethods  Json     @default("[{\"name\":\"Orange Money\",\"status\":true,\"icon\":\"\uD83D\uDFE0\"},{\"name\":\"Wave\",\"status\":true,\"icon\":\"\uD83D\uDD35\"},{\"name\":\"Paiement à la livraison\",\"status\":true,\"icon\":\"\uD83D\uDCB5\"},{\"name\":\"Carte Bancaire (Stripe)\",\"status\":false,\"icon\":\"\uD83D\uDCB3\"}]")
+  heroTitle       String   @default("Le Futur du E-commerce au Sénégal")
+  heroSubtitle    String   @default("Découvrez la marketplace la plus avancée du Sénégal.")
+  navigationItems Json     @default("[\"Accueil\", \"Boutique\", \"Mobile\", \"Mode\", \"Électronique\"]")
+  updatedAt       DateTime @updatedAt
+}

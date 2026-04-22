@@ -46,6 +46,10 @@ const AdminDashboard = ({ products = [] }) => {
     const [banners, setBanners] = useState([]);
     const [isBannerModalOpen, setIsBannerModalOpen] = useState(false);
 
+    // Paramètres Système et CMS
+    const [siteSettings, setSiteSettings] = useState(null);
+    const [isSavingSettings, setIsSavingSettings] = useState(false);
+
     // Meta Pixel pour l'Admin
     const { user: authUser } = useAuth();
     const [metaPixelId, setMetaPixelId] = useState(authUser?.metaPixelId || '');
@@ -77,6 +81,25 @@ const AdminDashboard = ({ products = [] }) => {
             alert(error.message);
         } finally {
             setIsSavingPixel(false);
+        }
+    };
+
+    const handleSaveSettings = async () => {
+        try {
+            setIsSavingSettings(true);
+            const token = localStorage.getItem('token');
+            const res = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/admin/settings`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify(siteSettings)
+            });
+
+            if (!res.ok) throw new Error("Erreur de sauvegarde");
+            alert("✓ Paramètres sauvegardés avec succès !");
+        } catch (error) {
+            alert(error.message);
+        } finally {
+            setIsSavingSettings(false);
         }
     };
 
@@ -365,12 +388,13 @@ const AdminDashboard = ({ products = [] }) => {
                 const headers = { 'Authorization': `Bearer ${token}` };
 
                 // Appels indépendants — une erreur n'en bloque pas d'autres
-                const [resStats, resUsers, resOrders, resPromos, resBanners] = await Promise.all([
+                const [resStats, resUsers, resOrders, resPromos, resBanners, resSettings] = await Promise.all([
                     fetch(API + '/api/admin/stats', { headers }),
                     fetch(API + '/api/admin/users', { headers }),
                     fetch(API + '/api/admin/orders', { headers }),
                     fetch(API + '/api/admin/promos', { headers }),
                     fetch(API + '/api/banners?all=true', { headers }),
+                    fetch(API + '/api/admin/settings', { headers }),
                 ]);
 
                 // Stats
@@ -398,6 +422,17 @@ const AdminDashboard = ({ products = [] }) => {
 
                 // Banners
                 if (resBanners.ok) setBanners(await resBanners.json());
+
+                // Settings
+                if (resSettings.ok) {
+                    const settingsData = await resSettings.json();
+                    
+                    // S'assurer que paymentMethods et navigationItems sont bien des tableaux / objets et non des strings au besoin
+                    try { if (typeof settingsData.paymentMethods === 'string') settingsData.paymentMethods = JSON.parse(settingsData.paymentMethods); } catch (e) { }
+                    try { if (typeof settingsData.navigationItems === 'string') settingsData.navigationItems = JSON.parse(settingsData.navigationItems); } catch (e) { }
+                    
+                    setSiteSettings(settingsData);
+                }
 
             } catch (err) {
                 setError(err.message);
@@ -1213,9 +1248,16 @@ const AdminDashboard = ({ products = [] }) => {
     };
 
     // --- Render Settings (Super Admin only) ---
-    const renderSettings = () => (
+    const renderSettings = () => {
+        if (!siteSettings) return <div className="p-4">Chargement des paramètres...</div>;
+        return (
         <div className="max-w-4xl mx-auto space-y-8">
-            <h2 className="text-xl font-bold text-neutral-800">Paramètres de la Plateforme</h2>
+            <div className="flex justify-between items-center">
+                <h2 className="text-xl font-bold text-neutral-800">Paramètres de la Plateforme</h2>
+                <button onClick={handleSaveSettings} disabled={isSavingSettings} className="bg-black text-white px-6 py-2 rounded-xl font-bold text-sm hover:bg-neutral-800 disabled:opacity-50">
+                    {isSavingSettings ? 'Sauvegarde...' : 'Sauvegarder les modifications'}
+                </button>
+            </div>
             <Card className="p-6 border border-neutral-100">
                 <div className="flex items-center gap-3 mb-6">
                     <div className="p-2 bg-neutral-100 rounded-lg"><Settings className="w-5 h-5 text-neutral-700" /></div>
@@ -1224,19 +1266,19 @@ const AdminDashboard = ({ products = [] }) => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
                         <label className="text-sm font-bold text-neutral-700">Nom de la Plateforme</label>
-                        <input type="text" defaultValue="Jaay-Ma" className="w-full px-4 py-2 bg-white border border-neutral-200 rounded-xl text-sm focus:outline-none focus:border-black" />
+                        <input type="text" value={siteSettings.platformName} onChange={e => setSiteSettings({...siteSettings, platformName: e.target.value})} className="w-full px-4 py-2 bg-white border border-neutral-200 rounded-xl text-sm focus:outline-none focus:border-black" />
                     </div>
                     <div className="space-y-2">
                         <label className="text-sm font-bold text-neutral-700">Email de Support</label>
-                        <input type="email" defaultValue="support@jaay-ma.sn" className="w-full px-4 py-2 bg-white border border-neutral-200 rounded-xl text-sm focus:outline-none focus:border-black" />
+                        <input type="email" value={siteSettings.supportEmail} onChange={e => setSiteSettings({...siteSettings, supportEmail: e.target.value})} className="w-full px-4 py-2 bg-white border border-neutral-200 rounded-xl text-sm focus:outline-none focus:border-black" />
                     </div>
                     <div className="space-y-2">
                         <label className="text-sm font-bold text-neutral-700">Téléphone de Support</label>
-                        <input type="tel" defaultValue="+221 77 000 00 00" className="w-full px-4 py-2 bg-white border border-neutral-200 rounded-xl text-sm focus:outline-none focus:border-black" />
+                        <input type="tel" value={siteSettings.supportPhone} onChange={e => setSiteSettings({...siteSettings, supportPhone: e.target.value})} className="w-full px-4 py-2 bg-white border border-neutral-200 rounded-xl text-sm focus:outline-none focus:border-black" />
                     </div>
                     <div className="space-y-2">
                         <label className="text-sm font-bold text-neutral-700">Devise par défaut</label>
-                        <select className="w-full px-4 py-2 bg-white border border-neutral-200 rounded-xl text-sm focus:outline-none focus:border-black">
+                        <select value={siteSettings.defaultCurrency} onChange={e => setSiteSettings({...siteSettings, defaultCurrency: e.target.value})} className="w-full px-4 py-2 bg-white border border-neutral-200 rounded-xl text-sm focus:outline-none focus:border-black">
                             <option>FCFA (XOF)</option>
                             <option>USD ($)</option>
                             <option>EUR (€)</option>
@@ -1250,33 +1292,40 @@ const AdminDashboard = ({ products = [] }) => {
                     <h3 className="font-bold text-lg">Méthodes de Paiement</h3>
                 </div>
                 <div className="space-y-4">
-                    {[
-                        { name: "Orange Money", status: true, icon: "🟠" },
-                        { name: "Wave", status: true, icon: "🔵" },
-                        { name: "Paiement à la livraison", status: true, icon: "💵" },
-                        { name: "Carte Bancaire (Stripe)", status: false, icon: "💳" }
-                    ].map((method, i) => (
+                    {(siteSettings.paymentMethods || []).map((method, i) => (
                         <div key={i} className="flex items-center justify-between p-4 border border-neutral-100 rounded-xl">
                             <div className="flex items-center gap-3">
                                 <span className="text-2xl">{method.icon}</span>
                                 <span className="font-bold text-neutral-900">{method.name}</span>
                             </div>
-                            <div className={`w-12 h-6 rounded-full relative ${method.status ? 'bg-green-500' : 'bg-neutral-200'}`}>
-                                <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow-sm ${method.status ? 'right-1' : 'left-1'}`}></div>
-                            </div>
+                            <button 
+                                onClick={() => {
+                                    const newMethods = [...siteSettings.paymentMethods];
+                                    newMethods[i].status = !newMethods[i].status;
+                                    setSiteSettings({ ...siteSettings, paymentMethods: newMethods });
+                                }}
+                                className={`w-12 h-6 rounded-full relative transition-colors ${method.status ? 'bg-green-500' : 'bg-neutral-200'}`}
+                            >
+                                <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow-sm transition-all ${method.status ? 'right-1' : 'left-1'}`}></div>
+                            </button>
                         </div>
                     ))}
                 </div>
             </Card>
         </div>
-    );
+        );
+    };
 
     // --- Render CMS (Super Admin only) ---
-    const renderCMS = () => (
+    const renderCMS = () => {
+        if (!siteSettings) return <div className="p-4">Chargement du CMS...</div>;
+        return (
         <div className="space-y-8">
-            <h2 className="text-xl font-bold text-neutral-800">Gestion du Contenu (CMS)</h2>
-            <div className="p-6 bg-amber-50 border border-amber-200 rounded-2xl">
-                <p className="text-amber-800 font-medium text-sm">⚠️ Cette section est en cours de développement. Les modifications ici ne sont pas encore sauvegardées en base de données.</p>
+            <div className="flex justify-between items-center">
+                <h2 className="text-xl font-bold text-neutral-800">Gestion du Contenu (CMS)</h2>
+                <button onClick={handleSaveSettings} disabled={isSavingSettings} className="bg-black text-white px-6 py-2 rounded-xl font-bold text-sm hover:bg-neutral-800 disabled:opacity-50">
+                    {isSavingSettings ? 'Sauvegarde...' : 'Sauvegarder les modifications'}
+                </button>
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <Card className="p-6 border border-neutral-100 lg:col-span-1 h-fit">
@@ -1285,7 +1334,7 @@ const AdminDashboard = ({ products = [] }) => {
                         <h3 className="font-bold text-lg">Navigation</h3>
                     </div>
                     <div className="space-y-2">
-                        {['Accueil', 'Boutique', 'Mobile', 'Mode', 'Électronique'].map((item, i) => (
+                        {(siteSettings.navigationItems || []).map((item, i) => (
                             <div key={i} className="flex items-center justify-between p-2 bg-neutral-50 rounded-lg border border-neutral-100 group">
                                 <span className="text-sm font-medium">{item}</span>
                                 <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -1306,20 +1355,18 @@ const AdminDashboard = ({ products = [] }) => {
                     <div className="space-y-4">
                         <div className="space-y-2">
                             <label className="text-sm font-bold">Grand Titre (Hero)</label>
-                            <input type="text" defaultValue="Le Futur du E-commerce au Sénégal" className="w-full px-4 py-2 border border-neutral-200 rounded-lg text-sm" />
+                            <input type="text" value={siteSettings.heroTitle} onChange={e => setSiteSettings({...siteSettings, heroTitle: e.target.value})} className="w-full px-4 py-2 border border-neutral-200 rounded-lg text-sm" />
                         </div>
                         <div className="space-y-2">
                             <label className="text-sm font-bold">Sous-titre</label>
-                            <textarea rows="2" defaultValue="Découvrez la marketplace la plus avancée du Sénégal." className="w-full px-4 py-2 border border-neutral-200 rounded-lg text-sm"></textarea>
-                        </div>
-                        <div className="flex justify-end">
-                            <button className="px-6 py-2 bg-black text-white text-sm font-bold rounded-lg hover:bg-neutral-800">Sauvegarder (bientôt disponible)</button>
+                            <textarea rows="2" value={siteSettings.heroSubtitle} onChange={e => setSiteSettings({...siteSettings, heroSubtitle: e.target.value})} className="w-full px-4 py-2 border border-neutral-200 rounded-lg text-sm"></textarea>
                         </div>
                     </div>
                 </Card>
             </div>
         </div>
-    );
+        );
+    };
 
     return (
         <DashboardLayout role={isSuperAdmin ? 'super-admin' : 'admin'} activeTab={activeTab} onTabChange={setActiveTab}>

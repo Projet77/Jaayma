@@ -1,6 +1,7 @@
 const express = require('express');
 const { getAdminStats, getAdminUsers, getAdminOrders, updateUser, deleteUser } = require('../controllers/adminController');
 const { getPromos, createPromo, togglePromoStatus, deletePromo } = require('../controllers/promoController');
+const { getSettings, updateSettings } = require('../controllers/settingsController');
 const { protect, admin } = require('../middleware/authMiddleware');
 
 const router = express.Router();
@@ -20,5 +21,10 @@ router.route('/promos')
 router.route('/promos/:id')
     .put(protect, admin, togglePromoStatus)
     .delete(protect, admin, deletePromo);
+
+// Routes Paramètres du système (CMS / Settings)
+router.route('/settings')
+    .get(protect, admin, getSettings)
+    .put(protect, admin, updateSettings);
 
 module.exports = router;
