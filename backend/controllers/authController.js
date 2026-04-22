@@ -214,41 +214,6 @@ const googleLogin = async (req, res) => {
     }
 };
 
-// @desc    Obtenir le profil de l'utilisateur connecté
-// @route   GET /api/auth/me
-// @access  Private
-const getMe = async (req, res) => {
-    try {
-        // req.user est déjà chargé par le middleware protect
-        const user = await prisma.user.findUnique({
-            where: { id: req.user.id },
-            select: {
-                id: true,
-                name: true,
-                email: true,
-                role: true,
-                metaPixelId: true,
-                createdAt: true,
-            }
-        });
-
-        if (!user) {
-            return res.status(404).json({ message: 'Utilisateur introuvable.' });
-        }
-
-        res.json({
-            id: user.id,
-            name: user.name,
-            email: user.email,
-            role: user.role,
-            metaPixelId: user.metaPixelId,
-        });
-    } catch (error) {
-        console.error('Erreur getMe:', error);
-        res.status(500).json({ message: 'Erreur serveur.' });
-    }
-};
-
 module.exports = {
     registerUser,
     loginUser,
