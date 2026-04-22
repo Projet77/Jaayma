@@ -358,43 +358,44 @@ const AdminDashboard = ({ products = [] }) => {
                 const token = localStorage.getItem('token');
                 if (!token) throw new Error("Non authentifié");
 
-                const resStats = await fetch((process.env.REACT_APP_API_URL || 'http://localhost:5000') + '/api/admin/stats', {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                const resUsers = await fetch((process.env.REACT_APP_API_URL || 'http://localhost:5000') + '/api/admin/users', {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                const resOrders = await fetch((process.env.REACT_APP_API_URL || 'http://localhost:5000') + '/api/admin/orders', {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                const resPromos = await fetch((process.env.REACT_APP_API_URL || 'http://localhost:5000') + '/api/admin/promos', {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                const resBanners = await fetch((process.env.REACT_APP_API_URL || 'http://localhost:5000') + '/api/banners?all=true', {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
+                const API = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+                const headers = { 'Authorization': `Bearer ${token}` };
 
-                if (!resStats.ok || !resUsers.ok) throw new Error("Erreur de récupération des données administrateur");
+                // Appels indépendants — une erreur n'en bloque pas d'autres
+                const [resStats, resUsers, resOrders, resPromos, resBanners] = await Promise.all([
+                    fetch(API + '/api/admin/stats', { headers }),
+                    fetch(API + '/api/admin/users', { headers }),
+                    fetch(API + '/api/admin/orders', { headers }),
+                    fetch(API + '/api/admin/promos', { headers }),
+                    fetch(API + '/api/banners?all=true', { headers }),
+                ]);
 
-                const statsData = await resStats.json();
-                const usersData = await resUsers.json();
-
-                if (resPromos.ok) {
-                    const promosData = await resPromos.json();
-                    setPromos(promosData);
-                }
-                if (resBanners.ok) {
-                    const bannersData = await resBanners.json();
-                    setBanners(bannersData);
+                // Stats
+                if (resStats.ok) {
+                    setStats(await resStats.json());
+                } else {
+                    const errData = await resStats.json().catch(() => ({}));
+                    console.error('Stats error:', errData.message);
+                    setError(`Stats: ${errData.message || resStats.status}`);
                 }
 
-                if (resOrders.ok) {
-                    const ordersData = await resOrders.json();
-                    setAllOrders(ordersData);
+                // Users
+                if (resUsers.ok) {
+                    setUsers(await resUsers.json());
+                } else {
+                    const errData = await resUsers.json().catch(() => ({}));
+                    console.error('Users error:', errData.message);
                 }
 
-                setStats(statsData);
-                setUsers(usersData);
+                // Orders
+                if (resOrders.ok) setAllOrders(await resOrders.json());
+
+                // Promos
+                if (resPromos.ok) setPromos(await resPromos.json());
+
+                // Banners
+                if (resBanners.ok) setBanners(await resBanners.json());
+
             } catch (err) {
                 setError(err.message);
             } finally {
