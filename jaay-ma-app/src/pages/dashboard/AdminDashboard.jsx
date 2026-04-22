@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import DashboardLayout from '../../components/layout/DashboardLayout';
 import { Card } from '../../components/ui/core';
-import { Package, ShoppingBag, AlertCircle, Plus, Search, Filter, Megaphone, Tag, ArrowRight, TrendingUp, Store, Users, Loader, X } from 'lucide-react';
+import { Package, ShoppingBag, AlertCircle, Plus, Search, Filter, Megaphone, Tag, ArrowRight, TrendingUp, Store, Users, Loader, X, Settings, CreditCard, Layout, Image, Upload, ShieldCheck } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { getAssetUrl } from '../../utils/assetUtils';
 
@@ -1075,14 +1075,260 @@ const AdminDashboard = ({ products = [] }) => {
         );
     };
 
+    const isSuperAdmin = authUser?.role === 'super-admin';
+
+    // --- Render Vendors (Super Admin only) ---
+    const renderVendors = () => {
+        const vendors = users.filter(u => u.role === 'vendor');
+        return (
+            <div className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <Card className="p-6 border border-neutral-100">
+                        <div className="flex items-center gap-4">
+                            <div className="p-3 bg-blue-50 text-blue-600 rounded-xl"><Store className="w-6 h-6" /></div>
+                            <div>
+                                <p className="text-neutral-500 text-sm font-medium">Total Vendeurs</p>
+                                <h3 className="text-2xl font-bold text-neutral-900">{vendors.length}</h3>
+                            </div>
+                        </div>
+                    </Card>
+                    <Card className="p-6 border border-neutral-100">
+                        <div className="flex items-center gap-4">
+                            <div className="p-3 bg-green-50 text-green-600 rounded-xl"><TrendingUp className="w-6 h-6" /></div>
+                            <div>
+                                <p className="text-neutral-500 text-sm font-medium">Chiffre d'affaires</p>
+                                <h3 className="text-2xl font-bold text-neutral-900">{(stats.revenue || 0).toLocaleString()} FCFA</h3>
+                            </div>
+                        </div>
+                    </Card>
+                    <Card className="p-6 border border-neutral-100">
+                        <div className="flex items-center gap-4">
+                            <div className="p-3 bg-purple-50 text-purple-600 rounded-xl"><Package className="w-6 h-6" /></div>
+                            <div>
+                                <p className="text-neutral-500 text-sm font-medium">Total Produits</p>
+                                <h3 className="text-2xl font-bold text-neutral-900">{stats.products || 0}</h3>
+                            </div>
+                        </div>
+                    </Card>
+                </div>
+                <Card className="p-0 border border-neutral-100 shadow-sm overflow-hidden">
+                    <div className="p-6 border-b border-neutral-100 flex justify-between items-center bg-neutral-50/50">
+                        <h3 className="font-bold text-lg">Liste des Vendeurs</h3>
+                    </div>
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-left">
+                            <thead className="bg-neutral-50 text-xs text-neutral-500 uppercase tracking-wider border-b border-neutral-100">
+                                <tr>
+                                    <th className="px-6 py-4 font-semibold">Vendeur</th>
+                                    <th className="px-6 py-4 font-semibold">Email</th>
+                                    <th className="px-6 py-4 font-semibold">Pixel Meta</th>
+                                    <th className="px-6 py-4 font-semibold">Inscrit le</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-neutral-100">
+                                {vendors.length === 0 ? (
+                                    <tr><td colSpan="4" className="px-6 py-12 text-center text-neutral-400">Aucun vendeur trouvé.</td></tr>
+                                ) : vendors.map(vendor => (
+                                    <tr key={vendor.id} className="group hover:bg-neutral-50 transition-colors">
+                                        <td className="px-6 py-4">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-10 h-10 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold">{vendor.name?.charAt(0).toUpperCase()}</div>
+                                                <span className="font-bold text-sm">{vendor.name}</span>
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4 text-sm text-neutral-600">{vendor.email}</td>
+                                        <td className="px-6 py-4">
+                                            {vendor.metaPixelId
+                                                ? <span className="text-xs font-bold text-green-600 bg-green-50 px-2 py-1 rounded-full">✅ Configuré</span>
+                                                : <span className="text-xs font-bold text-neutral-400 bg-neutral-100 px-2 py-1 rounded-full">Non configuré</span>
+                                            }
+                                        </td>
+                                        <td className="px-6 py-4 text-sm text-neutral-500">{vendor.createdAt ? new Date(vendor.createdAt).toLocaleDateString() : 'N/A'}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </Card>
+            </div>
+        );
+    };
+
+    // --- Render Admins list (Super Admin only) ---
+    const renderAdmins = () => {
+        const admins = users.filter(u => u.role === 'admin' || u.role === 'super-admin');
+        return (
+            <div className="space-y-6">
+                <div className="flex justify-between items-center">
+                    <h2 className="text-xl font-bold">Administrateurs de la plateforme</h2>
+                    <button onClick={() => setIsAddUserModalOpen(true)} className="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-lg text-sm font-bold hover:bg-neutral-800">
+                        <Plus className="w-4 h-4" /> Ajouter un Admin
+                    </button>
+                </div>
+                <Card className="p-0 border border-neutral-100 shadow-sm overflow-hidden">
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-left">
+                            <thead className="bg-neutral-50 text-xs text-neutral-500 uppercase tracking-wider border-b border-neutral-100">
+                                <tr>
+                                    <th className="px-6 py-4 font-semibold">Administrateur</th>
+                                    <th className="px-6 py-4 font-semibold">Email</th>
+                                    <th className="px-6 py-4 font-semibold">Rôle</th>
+                                    <th className="px-6 py-4 font-semibold">Inscrit le</th>
+                                    <th className="px-6 py-4 font-semibold text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-neutral-100">
+                                {admins.length === 0 ? (
+                                    <tr><td colSpan="5" className="px-6 py-12 text-center text-neutral-400">Aucun administrateur trouvé.</td></tr>
+                                ) : admins.map(admin => (
+                                    <tr key={admin.id} className="group hover:bg-neutral-50 transition-colors">
+                                        <td className="px-6 py-4">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-10 h-10 rounded-full bg-red-500 text-white flex items-center justify-center font-bold">{admin.name?.charAt(0).toUpperCase()}</div>
+                                                <span className="font-bold text-sm">{admin.name}</span>
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4 text-sm text-neutral-600">{admin.email}</td>
+                                        <td className="px-6 py-4">
+                                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${
+                                                admin.role === 'super-admin' ? 'bg-red-50 text-red-700 border-red-200' : 'bg-orange-50 text-orange-700 border-orange-200'
+                                            }`}>{admin.role}</span>
+                                        </td>
+                                        <td className="px-6 py-4 text-sm text-neutral-500">{admin.createdAt ? new Date(admin.createdAt).toLocaleDateString() : 'N/A'}</td>
+                                        <td className="px-6 py-4 text-right">
+                                            <button onClick={() => { setEditingUser(admin); setIsEditUserModalOpen(true); }} className="text-xs font-bold text-blue-600 border border-blue-100 px-3 py-1.5 rounded-lg hover:bg-blue-50">Modifier</button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </Card>
+            </div>
+        );
+    };
+
+    // --- Render Settings (Super Admin only) ---
+    const renderSettings = () => (
+        <div className="max-w-4xl mx-auto space-y-8">
+            <h2 className="text-xl font-bold text-neutral-800">Paramètres de la Plateforme</h2>
+            <Card className="p-6 border border-neutral-100">
+                <div className="flex items-center gap-3 mb-6">
+                    <div className="p-2 bg-neutral-100 rounded-lg"><Settings className="w-5 h-5 text-neutral-700" /></div>
+                    <h3 className="font-bold text-lg">Configuration Générale</h3>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                        <label className="text-sm font-bold text-neutral-700">Nom de la Plateforme</label>
+                        <input type="text" defaultValue="Jaay-Ma" className="w-full px-4 py-2 bg-white border border-neutral-200 rounded-xl text-sm focus:outline-none focus:border-black" />
+                    </div>
+                    <div className="space-y-2">
+                        <label className="text-sm font-bold text-neutral-700">Email de Support</label>
+                        <input type="email" defaultValue="support@jaay-ma.sn" className="w-full px-4 py-2 bg-white border border-neutral-200 rounded-xl text-sm focus:outline-none focus:border-black" />
+                    </div>
+                    <div className="space-y-2">
+                        <label className="text-sm font-bold text-neutral-700">Téléphone de Support</label>
+                        <input type="tel" defaultValue="+221 77 000 00 00" className="w-full px-4 py-2 bg-white border border-neutral-200 rounded-xl text-sm focus:outline-none focus:border-black" />
+                    </div>
+                    <div className="space-y-2">
+                        <label className="text-sm font-bold text-neutral-700">Devise par défaut</label>
+                        <select className="w-full px-4 py-2 bg-white border border-neutral-200 rounded-xl text-sm focus:outline-none focus:border-black">
+                            <option>FCFA (XOF)</option>
+                            <option>USD ($)</option>
+                            <option>EUR (€)</option>
+                        </select>
+                    </div>
+                </div>
+            </Card>
+            <Card className="p-6 border border-neutral-100">
+                <div className="flex items-center gap-3 mb-6">
+                    <div className="p-2 bg-purple-50 rounded-lg"><CreditCard className="w-5 h-5 text-purple-700" /></div>
+                    <h3 className="font-bold text-lg">Méthodes de Paiement</h3>
+                </div>
+                <div className="space-y-4">
+                    {[
+                        { name: "Orange Money", status: true, icon: "🟠" },
+                        { name: "Wave", status: true, icon: "🔵" },
+                        { name: "Paiement à la livraison", status: true, icon: "💵" },
+                        { name: "Carte Bancaire (Stripe)", status: false, icon: "💳" }
+                    ].map((method, i) => (
+                        <div key={i} className="flex items-center justify-between p-4 border border-neutral-100 rounded-xl">
+                            <div className="flex items-center gap-3">
+                                <span className="text-2xl">{method.icon}</span>
+                                <span className="font-bold text-neutral-900">{method.name}</span>
+                            </div>
+                            <div className={`w-12 h-6 rounded-full relative ${method.status ? 'bg-green-500' : 'bg-neutral-200'}`}>
+                                <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow-sm ${method.status ? 'right-1' : 'left-1'}`}></div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </Card>
+        </div>
+    );
+
+    // --- Render CMS (Super Admin only) ---
+    const renderCMS = () => (
+        <div className="space-y-8">
+            <h2 className="text-xl font-bold text-neutral-800">Gestion du Contenu (CMS)</h2>
+            <div className="p-6 bg-amber-50 border border-amber-200 rounded-2xl">
+                <p className="text-amber-800 font-medium text-sm">⚠️ Cette section est en cours de développement. Les modifications ici ne sont pas encore sauvegardées en base de données.</p>
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <Card className="p-6 border border-neutral-100 lg:col-span-1 h-fit">
+                    <div className="flex items-center gap-3 mb-6">
+                        <div className="p-2 bg-neutral-100 rounded-lg"><Layout className="w-5 h-5 text-neutral-700" /></div>
+                        <h3 className="font-bold text-lg">Navigation</h3>
+                    </div>
+                    <div className="space-y-2">
+                        {['Accueil', 'Boutique', 'Mobile', 'Mode', 'Électronique'].map((item, i) => (
+                            <div key={i} className="flex items-center justify-between p-2 bg-neutral-50 rounded-lg border border-neutral-100 group">
+                                <span className="text-sm font-medium">{item}</span>
+                                <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <button className="text-xs text-neutral-500 hover:text-black">Éditer</button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </Card>
+                <Card className="p-6 border border-neutral-100 lg:col-span-2">
+                    <div className="flex items-center gap-3 mb-6">
+                        <div className="p-2 bg-blue-50 rounded-lg"><Image className="w-5 h-5 text-blue-700" /></div>
+                        <div>
+                            <h3 className="font-bold text-lg">Éditeur de Pages</h3>
+                            <p className="text-xs text-neutral-500">Modifiez le texte des pages principales</p>
+                        </div>
+                    </div>
+                    <div className="space-y-4">
+                        <div className="space-y-2">
+                            <label className="text-sm font-bold">Grand Titre (Hero)</label>
+                            <input type="text" defaultValue="Le Futur du E-commerce au Sénégal" className="w-full px-4 py-2 border border-neutral-200 rounded-lg text-sm" />
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-sm font-bold">Sous-titre</label>
+                            <textarea rows="2" defaultValue="Découvrez la marketplace la plus avancée du Sénégal." className="w-full px-4 py-2 border border-neutral-200 rounded-lg text-sm"></textarea>
+                        </div>
+                        <div className="flex justify-end">
+                            <button className="px-6 py-2 bg-black text-white text-sm font-bold rounded-lg hover:bg-neutral-800">Sauvegarder (bientôt disponible)</button>
+                        </div>
+                    </div>
+                </Card>
+            </div>
+        </div>
+    );
+
     return (
-        <DashboardLayout role="admin" activeTab={activeTab} onTabChange={setActiveTab}>
+        <DashboardLayout role={isSuperAdmin ? 'super-admin' : 'admin'} activeTab={activeTab} onTabChange={setActiveTab}>
             {activeTab === 'overview' && renderOverview()}
             {activeTab === 'products' && renderProducts()}
             {activeTab === 'marketing' && renderMarketing()}
             {activeTab === 'users' && renderUsers()}
             {activeTab === 'orders' && renderOrders()}
-            {activeTab === 'customers' && <div className="text-center py-20 text-neutral-500">Gestion des Clients (À venir)</div>}
+            {/* Super Admin only tabs */}
+            {isSuperAdmin && activeTab === 'vendors' && renderVendors()}
+            {isSuperAdmin && activeTab === 'admins' && renderAdmins()}
+            {isSuperAdmin && activeTab === 'settings' && renderSettings()}
+            {isSuperAdmin && activeTab === 'cms' && renderCMS()}
 
             {/* Modal Ajout Produit */}
             {isAddModalOpen && (

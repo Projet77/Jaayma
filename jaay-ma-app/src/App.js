@@ -6,7 +6,6 @@ import ShopPage from './pages/ShopPage';
 import CartPage from './pages/CartPage';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
-import SuperAdminDashboard from './pages/dashboard/SuperAdminDashboard';
 import AdminDashboard from './pages/dashboard/AdminDashboard';
 import VendorDashboard from './pages/dashboard/VendorDashboard';
 import ProductPage from './pages/ProductPage';
@@ -325,7 +324,7 @@ function AppContent() {
           {/* Dashboards - Protected Routes */}
           <Route path="/dashboard-super-admin" element={
             <ProtectedRoute allowedRoles={['super-admin']}>
-              <SuperAdminDashboard products={products} />
+              <AdminDashboard products={products} />
             </ProtectedRoute>
           } />
 

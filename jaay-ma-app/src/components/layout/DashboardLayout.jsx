@@ -54,6 +54,7 @@ const DashboardLayout = ({ role = 'admin', children, activeTab: externalActiveTa
     const menus = {
         'super-admin': [
             { id: 'overview', label: 'Vue d\'ensemble', icon: LayoutDashboard },
+            { id: 'orders', label: 'Commandes', icon: ShoppingBag },
             { id: 'users', label: 'Utilisateurs', icon: Users },
             { id: 'products', label: 'Produits', icon: Package },
             { id: 'vendors', label: 'Vendeurs', icon: Store },

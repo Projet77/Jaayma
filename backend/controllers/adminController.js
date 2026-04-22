@@ -45,7 +45,10 @@ const getAdminUsers = async (req, res) => {
                 name: true,
                 email: true,
                 role: true,
-            }
+                metaPixelId: true,
+                createdAt: true,
+            },
+            orderBy: { createdAt: 'desc' }
         });
         res.json(users);
     } catch (error) {
