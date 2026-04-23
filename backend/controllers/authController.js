@@ -214,9 +214,46 @@ const googleLogin = async (req, res) => {
     }
 };
 
+// @desc    Mettre à jour le profil utilisateur
+// @route   PUT /api/auth/profile
+// @access  Private
+const updateProfile = async (req, res) => {
+    try {
+        const { name, phone, address, city, shopName } = req.body;
+        const userId = req.user.id;
+
+        const updatedUser = await prisma.user.update({
+            where: { id: userId },
+            data: {
+                ...(name && { name }),
+                ...(phone !== undefined && { phone }),
+                ...(address !== undefined && { address }),
+                ...(city !== undefined && { city }),
+                ...(shopName !== undefined && { shopName }),
+            }
+        });
+
+        res.json({
+            id: updatedUser.id,
+            name: updatedUser.name,
+            email: updatedUser.email,
+            role: updatedUser.role,
+            phone: updatedUser.phone,
+            address: updatedUser.address,
+            city: updatedUser.city,
+            shopName: updatedUser.shopName,
+            metaPixelId: updatedUser.metaPixelId,
+        });
+    } catch (error) {
+        console.error('Erreur updateProfile:', error);
+        res.status(500).json({ message: 'Erreur lors de la mise à jour du profil' });
+    }
+};
+
 module.exports = {
     registerUser,
     loginUser,
     getMe,
     googleLogin,
+    updateProfile,
 };

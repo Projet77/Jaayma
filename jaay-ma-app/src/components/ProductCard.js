@@ -34,6 +34,11 @@ const ProductCard = ({
             -{Math.round((1 - product.price / product.originalPrice) * 100)}%
           </div>
         )}
+        {product.isFeatured && (
+          <div className="absolute top-2 right-2 bg-gradient-to-r from-amber-400 to-yellow-300 text-amber-900 text-[10px] font-bold px-2 py-1 rounded-full shadow-md flex items-center gap-1">
+            ⭐ À la Une
+          </div>
+        )}
       </div>
 
       {/* Content */}

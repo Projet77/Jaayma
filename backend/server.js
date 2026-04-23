@@ -43,6 +43,14 @@ app.use('/api/banners', bannerRoutes);
 const notificationRoutes = require('./routes/notificationRoutes');
 app.use('/api/notifications', notificationRoutes);
 
+// Public Settings Route (footer, socials)
+const { getPublicSettings } = require('./controllers/settingsController');
+app.get('/api/settings', getPublicSettings);
+
+// Public Promo Validation Route
+const { validatePromo } = require('./controllers/promoController');
+app.post('/api/promos/validate', validatePromo);
+
 // Rendre le dossier 'uploads' statique
 app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
 

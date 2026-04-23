@@ -257,7 +257,7 @@ const Navbar = ({ cartCount, favoritesCount = 0, onCartClick, onSearch, transpar
                                                         <span>Mes favoris</span>
                                                         {favoritesCount > 0 && <span className="bg-red-500 text-white font-bold px-2 py-0.5 rounded-full text-[10px]">{favoritesCount}</span>}
                                                     </button>
-                                                    <button onClick={() => { setIsProfileOpen(false); alert('Page en construction'); }} className="w-full text-left px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50">Paramètres</button>
+                                                    <button onClick={() => { setIsProfileOpen(false); navigate('/profile'); }} className="w-full text-left px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50">Mon Profil & Paramètres</button>
                                                 </div>
                                                 <div className="border-t border-neutral-100 py-1">
                                                     <button

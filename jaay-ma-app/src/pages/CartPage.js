@@ -6,14 +6,56 @@ import Button from '../components/ui/Button';
 import Card from '../components/ui/Card';
 import { useAuth } from '../context/AuthContext';
 
+const API = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
 const CartPage = ({ cart, cartItemsCount, cartTotal, updateCartQuantity, removeFromCart, formatPrice, handleCheckout }) => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [paymentMethod, setPaymentMethod] = useState('Orange Money');
+  const [whatsappNumber, setWhatsappNumber] = useState('221764297495');
+
+  useEffect(() => {
+    fetch(`${API}/api/settings`)
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.whatsappNumber) setWhatsappNumber(data.whatsappNumber.replace(/\D/g, ''));
+      })
+      .catch(() => {});
+  }, []);
+
+  // Code promo states
+  const [promoCode, setPromoCode] = useState('');
+  const [promoResult, setPromoResult] = useState(null);
+  const [promoError, setPromoError] = useState('');
+  const [promoLoading, setPromoLoading] = useState(false);
+
+  const finalTotal = promoResult ? promoResult.newTotal : cartTotal;
+
+  const handleApplyPromo = async () => {
+    if (!promoCode.trim()) return;
+    setPromoLoading(true);
+    setPromoError('');
+    setPromoResult(null);
+    try {
+      const res = await fetch(`${API}/api/promos/validate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: promoCode.trim(), cartTotal })
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setPromoError(data.message || 'Code invalide');
+      } else {
+        setPromoResult(data);
+      }
+    } catch {
+      setPromoError('Erreur réseau, réessayez.');
+    } finally {
+      setPromoLoading(false);
+    }
+  };
 
   const handleWhatsAppCheckout = () => {
-    const phoneNumber = "221764297495";
-
     let text = `Bonjour Jaay-Ma ! 👋\nJe souhaite passer une commande.\n\n`;
     if (user && user.name) {
       text += `👤 *Client :* ${user.name}\n`;
@@ -31,12 +73,15 @@ const CartPage = ({ cart, cartItemsCount, cartTotal, updateCartQuantity, removeF
       text += `\n`;
     });
 
+    if (promoResult) {
+      text += `🎟️ *Code Promo appliqué :* ${promoResult.code} (-${formatPrice(promoResult.discountAmount)})\n`;
+    }
     text += `*💳 Mode de paiement choisi :* ${paymentMethod}\n`;
-    text += `*💰 TOTAL À PAYER :* ${formatPrice(cartTotal)}\n\n`;
+    text += `*💰 TOTAL À PAYER :* ${formatPrice(finalTotal)}\n\n`;
     text += `Merci de m'indiquer la marche à suivre pour la livraison !`;
 
     const encodedText = encodeURIComponent(text);
-    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedText}`;
+    const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedText}`;
 
     window.open(whatsappUrl, '_blank');
   };
@@ -124,6 +169,12 @@ const CartPage = ({ cart, cartItemsCount, cartTotal, updateCartQuantity, removeF
                   <span>Sous-total</span>
                   <span className="font-medium text-surface-900">{formatPrice(cartTotal)}</span>
                 </div>
+                {promoResult && (
+                  <div className="flex justify-between text-green-600">
+                    <span>Réduction ({promoResult.code})</span>
+                    <span className="font-medium">-{formatPrice(promoResult.discountAmount)}</span>
+                  </div>
+                )}
                 <div className="flex justify-between text-surface-600">
                   <span>Livraison</span>
                   <span className="text-green-600 font-medium">Gratuite</span>
@@ -132,6 +183,28 @@ const CartPage = ({ cart, cartItemsCount, cartTotal, updateCartQuantity, removeF
                   <span>Taxes estimées</span>
                   <span className="text-surface-900">Incluses</span>
                 </div>
+              </div>
+
+              {/* Champ Code Promo */}
+              <div className="mb-6">
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    placeholder="Code promo"
+                    value={promoCode}
+                    onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
+                    className="flex-1 px-3 py-2 border border-surface-200 rounded-lg text-sm focus:outline-none focus:border-primary uppercase"
+                  />
+                  <button
+                    onClick={handleApplyPromo}
+                    disabled={promoLoading || !promoCode}
+                    className="px-4 py-2 bg-black text-white text-xs font-bold rounded-lg hover:bg-neutral-800 transition-colors disabled:opacity-50"
+                  >
+                    {promoLoading ? '...' : 'Appliquer'}
+                  </button>
+                </div>
+                {promoError && <p className="text-[10px] text-red-500 mt-1 font-medium">{promoError}</p>}
+                {promoResult && <p className="text-[10px] text-green-600 mt-1 font-medium">{promoResult.message}</p>}
               </div>
 
               {/* Sélecteur de Paiement */}

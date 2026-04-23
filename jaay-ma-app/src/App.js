@@ -10,6 +10,8 @@ import AdminDashboard from './pages/dashboard/AdminDashboard';
 import VendorDashboard from './pages/dashboard/VendorDashboard';
 import ProductPage from './pages/ProductPage';
 import FavoritesPage from './pages/FavoritesPage';
+import ProfilePage from './pages/ProfilePage';
+import Footer from './components/layout/Footer';
 import { motion, AnimatePresence } from 'framer-motion';
 import logoUrl from './assets/logo.png';
 
@@ -321,6 +323,12 @@ function AppContent() {
             </ProtectedRoute>
           } />
 
+          <Route path="/profile" element={
+            <ProtectedRoute>
+              <ProfilePage />
+            </ProtectedRoute>
+          } />
+
           {/* Dashboards - Protected Routes */}
           <Route path="/dashboard-super-admin" element={
             <ProtectedRoute allowedRoles={['super-admin']}>
@@ -344,6 +352,8 @@ function AppContent() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </AnimatePresence>
+
+      {!isDashboardRoute && <Footer />}
     </div>
   );
 }

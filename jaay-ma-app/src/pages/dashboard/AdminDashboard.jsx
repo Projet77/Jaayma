@@ -1277,12 +1277,32 @@ const AdminDashboard = ({ products = [] }) => {
                         <input type="tel" value={siteSettings.supportPhone} onChange={e => setSiteSettings({...siteSettings, supportPhone: e.target.value})} className="w-full px-4 py-2 bg-white border border-neutral-200 rounded-xl text-sm focus:outline-none focus:border-black" />
                     </div>
                     <div className="space-y-2">
+                        <label className="text-sm font-bold text-neutral-700">Numéro WhatsApp (Commande)</label>
+                        <input type="tel" value={siteSettings.whatsappNumber} onChange={e => setSiteSettings({...siteSettings, whatsappNumber: e.target.value})} className="w-full px-4 py-2 bg-white border border-neutral-200 rounded-xl text-sm focus:outline-none focus:border-black" />
+                    </div>
+                    <div className="space-y-2">
                         <label className="text-sm font-bold text-neutral-700">Devise par défaut</label>
                         <select value={siteSettings.defaultCurrency} onChange={e => setSiteSettings({...siteSettings, defaultCurrency: e.target.value})} className="w-full px-4 py-2 bg-white border border-neutral-200 rounded-xl text-sm focus:outline-none focus:border-black">
                             <option>FCFA (XOF)</option>
                             <option>USD ($)</option>
                             <option>EUR (€)</option>
                         </select>
+                    </div>
+                    <div className="space-y-2">
+                        <label className="text-sm font-bold text-neutral-700 text-blue-600">Lien Facebook</label>
+                        <input type="text" value={siteSettings.facebookUrl} onChange={e => setSiteSettings({...siteSettings, facebookUrl: e.target.value})} className="w-full px-4 py-2 bg-white border border-blue-100 rounded-xl text-sm focus:outline-none focus:border-blue-500" placeholder="https://facebook.com/..." />
+                    </div>
+                    <div className="space-y-2">
+                        <label className="text-sm font-bold text-neutral-700 text-pink-600">Lien Instagram</label>
+                        <input type="text" value={siteSettings.instagramUrl} onChange={e => setSiteSettings({...siteSettings, instagramUrl: e.target.value})} className="w-full px-4 py-2 bg-white border border-pink-100 rounded-xl text-sm focus:outline-none focus:border-pink-500" placeholder="https://instagram.com/..." />
+                    </div>
+                    <div className="space-y-2">
+                        <label className="text-sm font-bold text-neutral-700 text-black">Lien TikTok</label>
+                        <input type="text" value={siteSettings.tiktokUrl} onChange={e => setSiteSettings({...siteSettings, tiktokUrl: e.target.value})} className="w-full px-4 py-2 bg-white border border-neutral-200 rounded-xl text-sm focus:outline-none focus:border-black" placeholder="https://tiktok.com/@..." />
+                    </div>
+                    <div className="space-y-2">
+                        <label className="text-sm font-bold text-neutral-700 text-sky-500">Lien X (Twitter)</label>
+                        <input type="text" value={siteSettings.twitterUrl} onChange={e => setSiteSettings({...siteSettings, twitterUrl: e.target.value})} className="w-full px-4 py-2 bg-white border border-sky-100 rounded-xl text-sm focus:outline-none focus:border-sky-400" placeholder="https://twitter.com/..." />
                     </div>
                 </div>
             </Card>
