@@ -357,7 +357,6 @@ const ProductPage = ({ selectedProduct, addToCart, goBack, setSelectedProduct, p
           </div>
         </div>
       </div>
-      </div>
     </motion.div>
   );
 };

@@ -226,7 +226,6 @@ const ShopPage = ({ addToCart, setSelectedProduct, products = [], favorites = []
                 </motion.layout>
                 )}
             </div >
-            </div >
         </div >
     );
 };
