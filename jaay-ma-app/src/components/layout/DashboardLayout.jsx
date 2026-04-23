@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useRef, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import {
     LayoutDashboard,
@@ -16,8 +16,11 @@ import {
     ShoppingBag,
     CreditCard,
     Search,
-    Bell
+    Bell,
+    Home,
+    User
 } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 
 const SidebarItem = ({ icon: Icon, label, isActive, onClick, isCollapsed }) => (
     <button
@@ -43,8 +46,23 @@ const SidebarItem = ({ icon: Icon, label, isActive, onClick, isCollapsed }) => (
 
 const DashboardLayout = ({ role = 'admin', children, activeTab: externalActiveTab, onTabChange }) => {
     const navigate = useNavigate();
+    const { user, logout } = useAuth();
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const [internalActiveTab, setInternalActiveTab] = useState('overview');
+    
+    // Navbar dropdown states
+    const [isProfileOpen, setIsProfileOpen] = useState(false);
+    const navRef = useRef(null);
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (navRef.current && !navRef.current.contains(event.target)) {
+                setIsProfileOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
 
     // Use external control if provided, otherwise internal state
     const activeTab = externalActiveTab || internalActiveTab;
@@ -119,12 +137,21 @@ const DashboardLayout = ({ role = 'admin', children, activeTab: externalActiveTa
                     ))}
                 </div>
 
-                <div className="p-4 border-t border-neutral-100">
+                <div className="p-4 border-t border-neutral-100 space-y-1">
                     <SidebarItem
-                        icon={LogOut}
-                        label="Retour au site"
+                        icon={Home}
+                        label="Accueil du site"
                         isCollapsed={!isSidebarOpen}
                         onClick={() => navigate('/')}
+                    />
+                    <SidebarItem
+                        icon={LogOut}
+                        label="Déconnexion"
+                        isCollapsed={!isSidebarOpen}
+                        onClick={() => {
+                            logout && logout();
+                            navigate('/');
+                        }}
                     />
                 </div>
             </motion.aside>
@@ -139,7 +166,7 @@ const DashboardLayout = ({ role = 'admin', children, activeTab: externalActiveTa
                         {currentMenu.find(m => m.id === activeTab)?.label}
                     </h1>
 
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-4" ref={navRef}>
                         <div className="relative hidden md:block">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
                             <input
@@ -148,11 +175,59 @@ const DashboardLayout = ({ role = 'admin', children, activeTab: externalActiveTa
                                 className="pl-10 pr-4 py-2 bg-neutral-50 border border-neutral-200 rounded-full text-sm focus:outline-none focus:border-primary w-64 transition-all"
                             />
                         </div>
-                        <button className="p-2 hover:bg-neutral-50 rounded-full relative">
+                        <button className="p-2 hover:bg-neutral-50 rounded-full relative" onClick={() => alert("Vos notifications apparaîtront ici.")}>
                             <Bell className="w-5 h-5 text-neutral-600" />
                             <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
                         </button>
-                        <div className="w-8 h-8 bg-gradient-to-br from-primary to-purple-600 rounded-full ring-2 ring-white shadow-lg cursor-pointer"></div>
+                        
+                        {/* Profile Dropdown */}
+                        <div className="relative">
+                            <div 
+                                onClick={() => setIsProfileOpen(!isProfileOpen)} 
+                                className="w-10 h-10 bg-gradient-to-br from-primary to-purple-600 rounded-full ring-2 ring-white shadow-lg flex items-center justify-center cursor-pointer transition-transform hover:scale-105"
+                            >
+                                <span className="text-white font-bold text-sm uppercase">
+                                    {user?.name ? user.name.substring(0, 2) : 'A'}
+                                </span>
+                            </div>
+
+                            <AnimatePresence>
+                                {isProfileOpen && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                        className="absolute right-0 top-full mt-2 w-56 bg-white rounded-xl shadow-xl border border-neutral-100 py-2 overflow-hidden z-50"
+                                    >
+                                        <div className="px-4 py-3 border-b border-neutral-100 bg-neutral-50/50">
+                                            <p className="text-sm font-bold text-neutral-900">{user?.name || 'Admin'}</p>
+                                            <p className="text-xs text-neutral-500 truncate">{user?.email || 'admin@jaayma.com'}</p>
+                                        </div>
+                                        <div className="py-1">
+                                            <button onClick={() => { setIsProfileOpen(false); navigate('/'); }} className="w-full flex items-center gap-2 px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50">
+                                                <Home className="w-4 h-4" /> Accueil du site
+                                            </button>
+                                            <button onClick={() => { setIsProfileOpen(false); alert('Page profil en construction'); }} className="w-full flex items-center gap-2 px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50">
+                                                <User className="w-4 h-4" /> Mon Profil
+                                            </button>
+                                        </div>
+                                        <div className="border-t border-neutral-100 py-1">
+                                            <button
+                                                onClick={() => {
+                                                    setIsProfileOpen(false);
+                                                    logout && logout();
+                                                    navigate('/');
+                                                }}
+                                                className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 font-bold hover:bg-red-50"
+                                            >
+                                                <LogOut className="w-4 h-4" /> Déconnexion
+                                            </button>
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </div>
+
                     </div>
                 </header>
 
