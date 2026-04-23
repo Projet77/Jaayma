@@ -3,7 +3,6 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 import { ArrowRight, Star, TrendingUp, ShieldCheck, Zap } from 'lucide-react';
 import { getAssetUrl } from '../utils/assetUtils';
 import { Button, Card } from '../components/ui/core';
-import Footer from '../components/layout/Footer';
 import { useNavigate } from 'react-router-dom';
 
 const LandingPage = ({ setSelectedProduct, products = [] }) => {
@@ -248,8 +247,6 @@ const LandingPage = ({ setSelectedProduct, products = [] }) => {
                 </div>
             </section>
 
-            {/* 5. FOOTER */}
-            <Footer />
         </div>
     );
 };

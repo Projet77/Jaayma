@@ -4,7 +4,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, SlidersHorizontal, Heart } from 'lucide-react';
 import { getAssetUrl } from '../utils/assetUtils';
 import { Button, Card } from '../components/ui/core';
-import Footer from '../components/layout/Footer';
 import { useNavigate } from 'react-router-dom';
 
 const ShopPage = ({ addToCart, setSelectedProduct, products = [], favorites = [], toggleFavorite, searchKeyword = '', setSearchKeyword }) => {
@@ -227,7 +226,7 @@ const ShopPage = ({ addToCart, setSelectedProduct, products = [], favorites = []
                 </motion.layout>
                 )}
             </div >
-            <Footer />
+            </div >
         </div >
     );
 };

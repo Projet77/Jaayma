@@ -4,7 +4,6 @@ import { motion } from 'framer-motion';
 import { ShoppingBag, Heart, Star, Truck, ShieldCheck, ArrowLeft, Plus, Minus, UserCircle } from 'lucide-react';
 import { getAssetUrl } from '../utils/assetUtils';
 import { Button } from '../components/ui/core';
-import Footer from '../components/layout/Footer';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
@@ -358,7 +357,7 @@ const ProductPage = ({ selectedProduct, addToCart, goBack, setSelectedProduct, p
           </div>
         </div>
       </div>
-      <Footer />
+      </div>
     </motion.div>
   );
 };
