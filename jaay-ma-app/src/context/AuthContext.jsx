@@ -37,6 +37,12 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    // Permet de rafraîchir le user en mémoire sans recharger la page
+    const refreshUser = async () => {
+        const token = localStorage.getItem('token');
+        if (token) await fetchUser(token);
+    };
+
     const login = async (email, password) => {
         const response = await fetch((process.env.REACT_APP_API_URL || 'http://localhost:5000') + '/api/auth/login', {
             method: 'POST',
@@ -99,7 +105,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ user, login, register, loginWithGoogle, logout, loading }}>
+        <AuthContext.Provider value={{ user, login, register, loginWithGoogle, logout, loading, refreshUser }}>
             {children}
         </AuthContext.Provider>
     );

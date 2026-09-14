@@ -5,6 +5,7 @@ import { getAssetUrl } from '../../utils/assetUtils';
 import { useAuth } from '../../context/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 import logoUrl from '../../assets/logo.png';
+import { trackSearch } from '../../hooks/usePixel';
 const Navbar = ({ cartCount, favoritesCount = 0, onCartClick, onSearch, transparent = false }) => {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -358,7 +359,10 @@ const Navbar = ({ cartCount, favoritesCount = 0, onCartClick, onSearch, transpar
                                     onChange={(e) => setSearchQuery(e.target.value)}
                                     onKeyDown={(e) => {
                                         if (e.key === 'Enter') {
-                                            if (onSearch) onSearch(searchQuery);
+                                            if (onSearch) {
+                                                trackSearch(searchQuery);
+                                                onSearch(searchQuery);
+                                            }
                                             setIsSearchOpen(false);
                                         }
                                     }}

@@ -9,7 +9,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider  = "postgresql"
 }
 
 model User {
@@ -158,5 +158,6 @@ model SystemSettings {
   instagramUrl    String   @default("")
   tiktokUrl       String   @default("")
   twitterUrl      String   @default("")
+  metaPixelId     String   @default("") // Pixel Meta global de la plateforme
   updatedAt       DateTime @updatedAt
 }

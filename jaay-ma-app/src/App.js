@@ -16,7 +16,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import logoUrl from './assets/logo.png';
 
 import { AuthProvider, useAuth } from './context/AuthContext';
-import ReactPixel from 'react-facebook-pixel';
+import { usePixel, trackAddToCart, trackAddToWishlist } from './hooks/usePixel';
 
 function App() {
   return (
@@ -49,6 +49,9 @@ function AppContent() {
   const location = useLocation();
   const navigate = useNavigate();
 
+  // Initialisation du Pixel Meta depuis les settings + PageView par route
+  usePixel();
+
   // Anciens state conservés pour la logique métier (on retire 'currentView')
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [products, setProducts] = useState([]);
@@ -67,18 +70,6 @@ function AppContent() {
     return () => clearTimeout(timer);
   }, []);
 
-  // Initialize Meta Pixel
-  useEffect(() => {
-    if (user && user.metaPixelId) {
-      console.log("Initializing Meta Pixel with ID:", user.metaPixelId);
-      const options = {
-        autoConfig: true, // set pixel's autoConfig. More info: https://developers.facebook.com/docs/facebook-pixel/advanced/
-        debug: false, // enable logs
-      };
-      ReactPixel.init(user.metaPixelId, undefined, options);
-      ReactPixel.pageView(); // Record a page view by default
-    }
-  }, [user]);
 
   // Load products (public)
   useEffect(() => {
@@ -141,6 +132,8 @@ function AppContent() {
         const data = await response.json();
         if (data.action === 'added') {
           setFavorites(prev => [...prev, product]);
+          // Track AddToWishlist
+          trackAddToWishlist(product);
         } else {
           setFavorites(prev => prev.filter(p => p.id !== product.id));
         }
@@ -163,14 +156,7 @@ function AppContent() {
     });
     
     // Track AddToCart event
-    if (user && user.metaPixelId) {
-       ReactPixel.track('AddToCart', {
-          content_ids: [product.id],
-          content_name: product.name,
-          currency: 'XOF',
-          value: product.price * qty
-       });
-    }
+    trackAddToCart(product, qty);
   };
 
   const removeFromCart = (productId) => {

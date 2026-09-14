@@ -5,6 +5,7 @@ import { getAssetUrl } from '../utils/assetUtils';
 import Button from '../components/ui/Button';
 import Card from '../components/ui/Card';
 import { useAuth } from '../context/AuthContext';
+import { trackInitiateCheckout, trackPurchase } from '../hooks/usePixel';
 
 const API = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
@@ -56,6 +57,9 @@ const CartPage = ({ cart, cartItemsCount, cartTotal, updateCartQuantity, removeF
   };
 
   const handleWhatsAppCheckout = () => {
+    // Track InitiateCheckout Meta Pixel
+    trackInitiateCheckout(cart, finalTotal);
+
     let text = `Bonjour Jaay-Ma ! 👋\nJe souhaite passer une commande.\n\n`;
     if (user && user.name) {
       text += `👤 *Client :* ${user.name}\n`;
@@ -243,7 +247,10 @@ const CartPage = ({ cart, cartItemsCount, cartTotal, updateCartQuantity, removeF
               </div>
 
               <Button
-                onClick={() => handleCheckout(paymentMethod)}
+                onClick={() => {
+                  trackInitiateCheckout(cart, finalTotal);
+                  handleCheckout(paymentMethod);
+                }}
                 variant="primary"
                 size="lg"
                 className="w-full shadow-xl shadow-primary-500/20"

@@ -6,6 +6,7 @@ import { getAssetUrl } from '../utils/assetUtils';
 import { Button } from '../components/ui/core';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { trackViewContent } from '../hooks/usePixel';
 
 const ProductPage = ({ selectedProduct, addToCart, goBack, setSelectedProduct, products = [], favorites = [], toggleFavorite }) => {
   const navigate = useNavigate();
@@ -19,6 +20,9 @@ const ProductPage = ({ selectedProduct, addToCart, goBack, setSelectedProduct, p
 
   useEffect(() => {
     if (selectedProduct && selectedProduct.id) {
+      // Track ViewContent pour le Pixel Meta
+      trackViewContent(selectedProduct);
+
       fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/products/${selectedProduct.id}/reviews`)
         .then(res => res.json())
         .then(data => {

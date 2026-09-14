@@ -39,7 +39,8 @@ const updateSettings = async (req, res) => {
         const {
             platformName, supportEmail, supportPhone, whatsappNumber,
             defaultCurrency, paymentMethods, heroTitle, heroSubtitle,
-            navigationItems, facebookUrl, instagramUrl, tiktokUrl, twitterUrl
+            navigationItems, facebookUrl, instagramUrl, tiktokUrl, twitterUrl,
+            metaPixelId
         } = req.body;
 
         const settings = await prisma.systemSettings.upsert({
@@ -58,6 +59,7 @@ const updateSettings = async (req, res) => {
                 ...(instagramUrl !== undefined && { instagramUrl }),
                 ...(tiktokUrl !== undefined && { tiktokUrl }),
                 ...(twitterUrl !== undefined && { twitterUrl }),
+                ...(metaPixelId !== undefined && { metaPixelId }),
             },
             create: {
                 id: "singleton",

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import DashboardLayout from '../../components/layout/DashboardLayout';
 import { getAssetUrl } from '../../utils/assetUtils';
@@ -29,16 +29,25 @@ const SuperAdminDashboard = ({ products = [] }) => {
     const setActiveTab = (tab) => setSearchParams({ tab });
     const [productFilter, setProductFilter] = useState('all');
 
-    // Meta Pixel pour le Super Admin
-    const { user: authUser } = useAuth();
-    const [metaPixelId, setMetaPixelId] = useState(authUser?.metaPixelId || '');
+    // Meta Pixel global (lu depuis les settings système)
+    const { user: authUser, refreshUser } = useAuth();
+    const [metaPixelId, setMetaPixelId] = useState('');
     const [isSavingPixel, setIsSavingPixel] = useState(false);
+
+    // Chargement du pixel depuis les settings publics
+    useEffect(() => {
+        fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/settings`)
+            .then(res => res.json())
+            .then(data => { if (data?.metaPixelId) setMetaPixelId(data.metaPixelId); })
+            .catch(() => {});
+    }, []);
 
     const handleSavePixel = async () => {
         try {
             setIsSavingPixel(true);
             const token = localStorage.getItem('token');
-            const res = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/admin/users/${authUser.id}`, {
+            // Sauvegarde dans les settings GLOBAUX de la plateforme
+            const res = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/admin/settings`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -48,14 +57,10 @@ const SuperAdminDashboard = ({ products = [] }) => {
             });
 
             if (!res.ok) throw new Error("Erreur lors de l'enregistrement de l'ID Pixel");
-            
-            // On met à jour l'utilisateur dans le local storage pour reflet immédiat
-            const updatedUser = await res.json();
-            const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
-            localStorage.setItem('user', JSON.stringify({ ...storedUser, metaPixelId: updatedUser.metaPixelId }));
-            
-            alert("✅ ID Pixel Meta configuré avec succès !");
-            window.location.reload();
+
+            // Mise à jour propre sans reload
+            await refreshUser();
+            alert("✅ Pixel Meta global configuré ! Il sera actif pour tous les visiteurs dès maintenant.");
         } catch (error) {
             alert(error.message);
         } finally {
