@@ -1236,7 +1236,6 @@ const AdminDashboard = ({ products = [] }) => {
             </div>
         );
     };
-    };
 
     const isSuperAdmin = authUser?.role === 'super-admin';
 
