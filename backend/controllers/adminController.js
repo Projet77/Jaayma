@@ -11,13 +11,18 @@ const getAdminStats = async (req, res) => {
         const orders = await prisma.order.findMany();
         const totalRevenue = orders.reduce((acc, order) => acc + order.totalPrice, 0);
 
-        const pendingOrders = orders.filter(o => o.status === 'En attente').length;
+        const pendingOrders = orders.filter(o => o.status === 'EN_ATTENTE' || o.status === 'En attente').length;
 
         // Récupérer les 5 dernières commandes
         const recentOrders = await prisma.order.findMany({
             take: 5,
             orderBy: { createdAt: 'desc' },
-            include: { user: { select: { name: true } } }
+            include: {
+                user: { select: { id: true, name: true, email: true } },
+                orderItems: {
+                    include: { product: true }
+                }
+            }
         });
 
         res.json({
@@ -56,14 +61,28 @@ const getAdminUsers = async (req, res) => {
     }
 };
 
-// @desc    Obtenir toutes les commandes (Admin)
+// @desc    Obtenir toutes les commandes (Admin) avec filtre par statut
 // @route   GET /api/admin/orders
 // @access  Private/Admin
 const getAdminOrders = async (req, res) => {
     try {
+        const { status } = req.query;
+        const where = {};
+        if (status && status !== 'ALL') {
+            where.status = status.toUpperCase();
+        }
+
         const orders = await prisma.order.findMany({
+            where,
             orderBy: { createdAt: 'desc' },
-            include: { user: { select: { name: true, email: true } } }
+            include: {
+                user: { select: { id: true, name: true, email: true, phone: true } },
+                orderItems: {
+                    include: {
+                        product: true
+                    }
+                }
+            }
         });
         res.json(orders);
     } catch (error) {

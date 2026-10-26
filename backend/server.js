@@ -19,6 +19,10 @@ app.use('/api/auth', authRoutes);
 const productRoutes = require('./routes/productRoutes');
 app.use('/api/products', productRoutes);
 
+// Order Routes
+const orderRoutes = require('./routes/orderRoutes');
+app.use('/api/orders', orderRoutes);
+
 // Favorite Routes
 const favoriteRoutes = require('./routes/favoriteRoutes');
 app.use('/api/favorites', favoriteRoutes);

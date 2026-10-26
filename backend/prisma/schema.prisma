@@ -75,9 +75,10 @@ model Order {
   id            String      @id @default(uuid())
   userId        String
   totalPrice    Float
-  status        String      @default("En attente") // "En attente", "Expédiée", "Livrée", "Annulée"
-  paymentMethod String      @default("Orange Money")
+  status        String      @default("EN_ATTENTE") // "EN_ATTENTE", "PAYEE", "EXPEDIEE", "LIVREE", "ANNULEE"
+  paymentMethod String      @default("livraison")
   shippingAddress String?
+  phone         String?
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
 

@@ -1,0 +1,19 @@
+﻿# Dependances
+node_modules/
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Builds
+build/
+dist/
+.expo/
+web-build/
+
+# Logs / systeme
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db

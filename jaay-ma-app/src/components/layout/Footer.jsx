@@ -7,9 +7,9 @@ const Footer = () => {
     const [settings, setSettings] = useState({
         platformName: 'Jaay-Ma',
         supportEmail: 'support@jaay-ma.sn',
-        supportPhone: '+221 77 000 00 00',
-        whatsappNumber: '+221 77 000 00 00',
-        facebookUrl: '',
+        supportPhone: '+221 76 429 74 95',
+        whatsappNumber: '+221 76 429 74 95',
+        facebookUrl: 'https://www.facebook.com/profile.php?id=61567527590945',
         instagramUrl: '',
         tiktokUrl: '',
         twitterUrl: '',

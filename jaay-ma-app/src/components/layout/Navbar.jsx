@@ -254,6 +254,10 @@ const Navbar = ({ cartCount, favoritesCount = 0, onCartClick, onSearch, transpar
                                                     {user.role === 'super-admin' && (
                                                         <button onClick={() => { setIsProfileOpen(false); navigate('/dashboard-super-admin'); }} className="w-full text-left px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50">Panel Super Admin</button>
                                                     )}
+                                                    <button onClick={() => { setIsProfileOpen(false); navigate('/orders'); }} className="w-full text-left px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 flex items-center justify-between">
+                                                        <span>Mes commandes</span>
+                                                        <span className="text-xs">📦</span>
+                                                    </button>
                                                     <button onClick={() => { setIsProfileOpen(false); navigate('/favorites'); }} className="w-full flex items-center gap-3 px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50">
                                                         <span>Mes favoris</span>
                                                         {favoritesCount > 0 && <span className="bg-red-500 text-white font-bold px-2 py-0.5 rounded-full text-[10px]">{favoritesCount}</span>}

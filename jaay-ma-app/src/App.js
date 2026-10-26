@@ -11,6 +11,8 @@ import VendorDashboard from './pages/dashboard/VendorDashboard';
 import ProductPage from './pages/ProductPage';
 import FavoritesPage from './pages/FavoritesPage';
 import ProfilePage from './pages/ProfilePage';
+import CheckoutPage from './pages/CheckoutPage';
+import MyOrdersPage from './pages/MyOrdersPage';
 import Footer from './components/layout/Footer';
 import { motion, AnimatePresence } from 'framer-motion';
 import logoUrl from './assets/logo.png';
@@ -294,8 +296,24 @@ function AppContent() {
               updateCartQuantity={updateCartQuantity}
               removeFromCart={removeFromCart}
               formatPrice={formatPrice}
-              handleCheckout={(method) => alert(`Checkout flow coming soon! Paiement sélectionné : ${method}`)}
+              handleCheckout={() => navigate('/checkout')}
             />
+          } />
+
+          <Route path="/checkout" element={
+            <ProtectedRoute>
+              <CheckoutPage
+                cart={cart}
+                setCart={setCart}
+                formatPrice={formatPrice}
+              />
+            </ProtectedRoute>
+          } />
+
+          <Route path="/orders" element={
+            <ProtectedRoute>
+              <MyOrdersPage formatPrice={formatPrice} />
+            </ProtectedRoute>
           } />
 
           <Route path="/favorites" element={
