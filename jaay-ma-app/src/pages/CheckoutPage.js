@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { Icons } from '../icons';
 import { useAuth } from '../context/AuthContext';
 import { getAssetUrl } from '../utils/assetUtils';
-import { trackInitiateCheckout } from '../hooks/usePixel';
 
 const API = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 

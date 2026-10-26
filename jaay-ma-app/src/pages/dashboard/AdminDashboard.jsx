@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import DashboardLayout from '../../components/layout/DashboardLayout';
 import { Card } from '../../components/ui/core';
-import { Package, ShoppingBag, AlertCircle, Plus, Search, Filter, Megaphone, Tag, ArrowRight, TrendingUp, Store, Users, Loader, X, Settings, CreditCard, Layout, Image } from 'lucide-react';
+import { Package, ShoppingBag, AlertCircle, Plus, Search, Megaphone, Tag, ArrowRight, TrendingUp, Store, Users, Loader, X, Settings, CreditCard, Layout, Image } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { getAssetUrl } from '../../utils/assetUtils';
 
@@ -77,8 +77,7 @@ const AdminDashboard = ({ products = [] }) => {
                 throw new Error(data.message || 'Erreur lors de la mise à jour du statut');
             }
 
-            const data = await res.json();
-            const updated = data.order || data;
+            await res.json();
 
             setAllOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: newStatus } : o));
             if (selectedOrder && selectedOrder.id === orderId) {
