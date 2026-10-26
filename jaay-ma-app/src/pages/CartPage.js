@@ -5,7 +5,7 @@ import { getAssetUrl } from '../utils/assetUtils';
 import Button from '../components/ui/Button';
 import Card from '../components/ui/Card';
 import { useAuth } from '../context/AuthContext';
-import { trackInitiateCheckout, trackPurchase } from '../hooks/usePixel';
+import { trackInitiateCheckout } from '../hooks/usePixel';
 
 const API = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
